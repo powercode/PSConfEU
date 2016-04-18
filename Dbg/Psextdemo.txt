@@ -1,0 +1,9 @@
+.load D:\repos\PSExt\src\bin\x64\Debug\PSExt.dll
+.reload -f
+!ps k -all
+
+!ps lm
+
+!ps Get-Command -Module PSExt
+
+!ps (idc k | select -skip 1).Foreach{$_.split(' ')[2]}
