@@ -12,3 +12,5 @@ dbg @dargs
 # lm = list modules
 # dv = Display Variables
 # q = quit
+
+Invoke-Debugger -ScriptFile gm.dbg -LoadSymbols -Debugger windbg notepad.exe

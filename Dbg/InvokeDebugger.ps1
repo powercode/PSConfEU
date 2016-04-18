@@ -74,7 +74,7 @@ function Invoke-Debugger
         [Alias('id')]
         [int] $ProcessId
         ,
-        [Parameter(Mandatory, ParameterSetName='path', ValueFromPipelineByPropertyName, position=1)]                
+        [Parameter(Mandatory, ParameterSetName='path', ValueFromPipelineByPropertyName, position=0)]                
         [Alias('PSPath')]
         [string] $LiteralPath
         ,
@@ -106,6 +106,11 @@ function Invoke-Debugger
         ,
         [Alias('n')]
         [switch] $SymbolVerbose
+        ,        
+        [switch] $Lines
+        ,
+        [Alias('s')]
+        [switch] $LoadSymbols
         ,
         [Parameter()]
         [PSDefaultValue(Help = 'cdb', Value='cdb')]        
@@ -120,22 +125,43 @@ function Invoke-Debugger
             $PSCmdlet.ThrowTerminatingError([ErrorRecord]::new([Exception]::new($msg), 'CommandAndScriptFile', [ErrorCategory]::InvalidArgument,$null))
         }
         $dbgArgs = @()
-        if ($Command)                 { $dbgArgs += '-c', "`"$Command`"" }
-        if ($ScriptFile)              { $dbgArgs += '-cf', $ScriptFile }
+        switch($Debugger)
+        {
+            'cdb' {
+                if ($LoadSymbols)     {$dbgArgs += '-s'}
+                if ($ScriptFile)      {$dbgArgs += '-cf', (Resolve-Path -LiteralPath $ScriptFile).ProviderPath}
+            }
+            'windbg'{
+                if ($LoadSymbols)     { $Command = '.reload -f',$Command -join ';'} 
+                if ($ScriptFile)      { $Command = '{0};$<{1}' -f $Command, (Resolve-Path -LiteralPath $ScriptFile).ProviderPath}               
+            }
+        }
+        
+        if ($Command)                 { $dbgArgs += '-c', "`"$Command`"" }        
         if ($SymbolPath)              { $dbgArgs += '-y', $SymbolPath }
         if ($ImagePath)               { $dbgArgs += '-i', $ImagePath }
         if ($IgnoreInitialBreakpoint) { $dbgArgs += '-g'}
         if ($IgnoreFinalBreakpoint)   { $dbgArgs += '-G'}
         if ($AllProcesses)            { $dbgArgs += '-o'}
         if ($SymbolVerbose)           { $dbgArgs += '-n'}
+        if ($Lines)                   { $dbgArgs += '-lines'}        
         if ($DefaultExtension)        { $dbgArgs += "-a$DefaultExtension"}
         if ($ExtraArgs)               { $dbgArgs += $ExtraArgs}
 
         switch($PSCmdlet.ParameterSetName)
         {
-            'dump' {$dbgargs += '-z', (Resolve-Path -LiteralPath $Dump -ea:Stop).ProviderPath}
-            'id'   {$dbgargs += '-p', $ProcessId}
-            'path' {$dbgargs += (Resolve-Path -LiteralPath $LiteralPath -ea:Stop).ProviderPath}
+            'dump' {$dbgArgs += '-z', (Resolve-Path -LiteralPath $Dump -ea:Stop).ProviderPath}
+            'id'   {$dbgArgs += '-p', $ProcessId}
+            'path' {
+                if (Test-Path $LiteralPath)
+                {
+                    $dbgArgs += $PSCmdlet.GetUnresolvedProviderPathFromPSPath($LiteralPath)
+                }
+                else 
+                {
+                    $dbgArgs += $LiteralPath 
+                }
+            }
         }
         
 
