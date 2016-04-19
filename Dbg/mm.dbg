@@ -2,4 +2,4 @@ r $t1=@$t1+1
 r $t2 = @rbp-59+18
 r $t3:uw = poi(@$t2)
 r $t4:uw = poi(@$t2 + 2)
-.if (@$t1==200) { gu; dw @$t2 L2;g} .else { ub @$ip; u}
+.if (@$t1==200) { gu; dw @$t2 L2;g} .else { ub @$ip L10; u}
