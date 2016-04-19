@@ -1,4 +1,6 @@
-bp User32!GetMessageW 200 "gu;dw @rbp-59+18 L2;g"
+bp User32!GetMessageW "gu;dw @rbp-59+18 L2;gh"
+$$bp User32!GetMessageW "gu;!ps Show-MouseCoord;gh"
+
 g
 
  $$ ub @$ip L10; u

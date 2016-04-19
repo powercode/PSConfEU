@@ -1,6 +1,6 @@
 param(
 	[int] $ThrottleLimit = 3,
-	[int] $Milliseconds = 500
+	[int] $Milliseconds = 100
 )
 
 Import-Module PSParallel -RequiredVersion 2.2.1
