@@ -1,5 +1,6 @@
-r $t1=@$t1+1
-r $t2 = @rbp-59+18
-r $t3:uw = poi(@$t2)
-r $t4:uw = poi(@$t2 + 2)
-.if (@$t1==200) { gu; dw @$t2 L2;g} .else { ub @$ip L10; u}
+cvbnr $t2 = @rbp-0x59+0x18
+r $t1 = @rbp-0x59+0x8
+.if (dwo(@$t1) = 0x200) {
+     .printf "x=%x y=%x\n", hi(poi(@$t2)), low(poi(@$t2))
+}
+g

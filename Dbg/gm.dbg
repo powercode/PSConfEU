@@ -1,6 +1,2 @@
-bp User32!GetMessageW "gu;dw @rbp-59+18 L2;gh"
-$$bp User32!GetMessageW "gu;!ps Show-MouseCoord;gh"
-
+bp User32!GetMessageW "gu;$$>a<C:\\Users\\Staffan\\Source\\Repos\\PSConfEU\\Dbg\\mm.dbg"
 g
-
- $$ ub @$ip L10; u
