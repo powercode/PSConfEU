@@ -1,4 +1,4 @@
-cvbnr $t2 = @rbp-0x59+0x18
+r $t2 = @rbp-0x59+0x18
 r $t1 = @rbp-0x59+0x8
 .if (dwo(@$t1) = 0x200) {
      .printf "x=%x y=%x\n", hi(poi(@$t2)), low(poi(@$t2))
