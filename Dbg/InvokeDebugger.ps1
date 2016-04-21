@@ -23,7 +23,7 @@ class DbgCompleter : IArgumentCompleter
         [IEnumerable[CompletionResult]] CompleteProcessID([string] $WordToComplete)
         {
             $res = [List[CompletionResult]]::new(20)
-            (Get-Process | Sort ID).Where{$_.Id.ToString().StartsWith($WordToComplete)}.Foreach{
+            (Get-Process | Sort-Object ID).Where{$_.Id.ToString().StartsWith($WordToComplete)}.Foreach{
                 [string] $id = $_.Id
                 $list = '{0} ({1})' -f $Id, $_.ProcessName
                 $tool = $_.MainWindowTitle
