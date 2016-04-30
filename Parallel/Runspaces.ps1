@@ -79,7 +79,7 @@ function Invoke-MyParallel
         {
             while($pool.GetAvailableRunspaces() -eq 0)
             {                        
-                Start-Sleep -Milliseconds 100
+                Start-Sleep -Milliseconds 42
                 $PSCmdlet.WriteDebug("No available runspaces")   
                 if ($PSCmdlet.Stopping)
                 {

@@ -1,4 +1,3 @@
-.load D:\repos\PSExt\src\bin\x64\Debug\PSExt.dll
 .reload -f
 !ps k -all
 

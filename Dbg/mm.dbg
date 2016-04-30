@@ -1,3 +1,7 @@
+$$ why rbp-0x59+0x18
+$$ ub @$ip L10
+$$ dt tagMSG (LPARAM contains x in high word, y in low word)
+
 r $t2 = @rbp-0x59+0x18
 r $t1 = @rbp-0x59+0x8
 .if (dwo(@$t1) = 0x200) {

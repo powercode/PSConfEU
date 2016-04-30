@@ -57,6 +57,6 @@ function DoPhilosophy {
   Write-Progress -id $PSParallelProgressId -Completed -activity $pd.Name -Status $status
 }
 
-1..10 | invoke-parallel -Throttle $ThrottleLimit  {
+1..10 | Invoke-Parallel -ThrottleLimit $ThrottleLimit   {
     DoPhilosophy
 }
