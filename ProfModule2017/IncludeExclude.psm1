@@ -1,4 +1,5 @@
 using namespace System.Management.Automation
+
 class IncludeExcludeFilter {
     hidden [WildcardPattern[]] $includes
     hidden [WildcardPattern[]] $excludes
@@ -22,18 +23,16 @@ class IncludeExcludeFilter {
     }
 
     [bool] ShouldOutput([string] $value) {
-        $excl = $this.excludes
-        if ($null -ne $excl) {
-            foreach($ex in $excl) {
+        if ($null -ne $this.excludes) {
+            foreach($ex in $this.excludes) {
                 if ($ex.IsMatch($value)) {
                     return $false
                 }
             }
         }
 
-        $incs = $this.includes
-        if ($null -ne $null) {
-            foreach($inc in $incs) {
+        if ($null -ne $this.includes) {
+            foreach($inc in $this.includes) {
                 if ($inc.IsMatch($value)) {
                     return $true
                 }
