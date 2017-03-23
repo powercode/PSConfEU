@@ -4,10 +4,10 @@ using module .\IncludeExclude.psm1
 
 
 function Get-FileData {
-    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName='Path')]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Path')]
     param(
         # Specifies a path to one or more locations. Wildcards are permitted.
-        [Parameter(Mandatory, Position=0, ParameterSetName="Path", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage="Path to one or more locations.")]
+        [Parameter(Mandatory, Position = 0, ParameterSetName = "Path", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Path to one or more locations.")]
         [ValidateNotNullOrEmpty()]
         [SupportsWildcards()]
         [string[]] $Path,
@@ -16,7 +16,7 @@ function Get-FileData {
         # used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters,
         # enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any
         # characters as escape sequences.
-        [Parameter(Mandatory, Position=0, ParameterSetName="LiteralPath", ValueFromPipelineByPropertyName, HelpMessage="Literal path to one or more locations.")]
+        [Parameter(Mandatory, Position = 0, ParameterSetName = "LiteralPath", ValueFromPipelineByPropertyName, HelpMessage = "Literal path to one or more locations.")]
         [Alias("PSPath")]
         [ValidateNotNullOrEmpty()]
         [string[]] $LiteralPath,

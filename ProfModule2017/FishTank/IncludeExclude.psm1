@@ -7,7 +7,7 @@ class IncludeExcludeFilter {
     IncludeExcludeFilter([string[]] $includes, [string[]] $excludes) {
         if ($includes) {
             $includePatterns = [WildcardPattern[]]::new($includes.Length)
-            for($i = 0; i -lt $includes.Length; ++$i) {
+            for ($i = 0; i -lt $includes.Length; ++$i) {
                 $includePatterns[$i] = [WildcardPattern]::new($includes[$i])
             }
             $this.includes = $includePatterns
@@ -15,7 +15,7 @@ class IncludeExcludeFilter {
 
         if ($excludes) {
             $excludePatterns = [WildcardPattern[]]::new($excludes.Length)
-            for($i = 0; $i -lt $excludes.Length; ++$i) {
+            for ($i = 0; $i -lt $excludes.Length; ++$i) {
                 $excludePatterns[$i] = [WildcardPattern]::new($excludes[$i])
             }
             $this.excludes = $excludePatterns
@@ -24,7 +24,7 @@ class IncludeExcludeFilter {
 
     [bool] ShouldOutput([string] $value) {
         if ($null -ne $this.excludes) {
-            foreach($exclude in $this.excludes) {
+            foreach ($exclude in $this.excludes) {
                 if ($exclude.IsMatch($value)) {
                     return $false
                 }
@@ -32,7 +32,7 @@ class IncludeExcludeFilter {
         }
 
         if ($null -ne $this.includes) {
-            foreach($include in $this.includes) {
+            foreach ($include in $this.includes) {
                 if ($include.IsMatch($value)) {
                     return $true
                 }
