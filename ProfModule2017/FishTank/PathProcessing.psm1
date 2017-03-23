@@ -37,7 +37,7 @@ class PathResult {
 class PathProcessor {
     static [PathResult[]] ResolveLiteralPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
         $retVal = [PathResult[]]::new($paths.Length)
-        for($i = 0; $i -lt $retVal.Length; $i++) {
+        for ($i = 0; $i -lt $retVal.Length; $i++) {
             $aPath = $paths[$i]
             if (!(Test-Path -LiteralPath $aPath)) {
                 $retVal[$i] = [PathProcessor]::CreatePathNotFoundErrorRecord($aPath)
@@ -51,14 +51,14 @@ class PathProcessor {
 
     static [List[PathResult]] ResolvePaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
         $retVal = [List[PathResult]]::new($paths.Length)
-        foreach($aPath in $paths) {
+        foreach ($aPath in $paths) {
             if (!(Test-Path -Path $aPath)) {
                 $retVal.Add([PathProcessor]::CreatePathNotFoundErrorRecord($aPath))
             }
             else {
                 $provider = $null
                 $resolved = $pathIntrinsics.GetResolvedProviderPathFromPSPath($aPath, [ref] $provider)
-                foreach($r in $resolved) {
+                foreach ($r in $resolved) {
                     $retVal.Add([PathResult]::new($r))
                 }
             }
@@ -68,7 +68,7 @@ class PathProcessor {
 
     static [string[]] ResolveNonExistingPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
         $retVal = [string[]]::new($paths.Length)
-        for($i = 0; $i -lt $retVal.Length; $i++) {
+        for ($i = 0; $i -lt $retVal.Length; $i++) {
             $retVal[$i] = $pathIntrinsics.GetUnresolvedProviderPathFromPSPath($paths[$i])
         }
         return $retVal
@@ -77,7 +77,7 @@ class PathProcessor {
     static [ErrorRecord] CreatePathNotFoundErrorRecord([string] $path) {
         $ex = [ItemNotFoundException]::new("Cannot find path '$path' because it does not exist.")
         $category = [System.Management.Automation.ErrorCategory]::ObjectNotFound
-        $errRecord = [ErrorRecord]::new($ex,'PathNotFound',$category,$path)
+        $errRecord = [ErrorRecord]::new($ex, 'PathNotFound', $category, $path)
         return $errRecord
     }
 }
