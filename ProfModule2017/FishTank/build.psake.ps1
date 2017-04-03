@@ -121,7 +121,7 @@ Task InlineModules -requiredVariables ModuleOutDir, ModuleName {
         $line = $_.LineNumber - 1
         $fileName = $_.Matches[0].Groups[1].Value
         $u, $c = (Get-Content -LiteralPath $ModuleOutDir/$fileName).Where( {$_ -match '^using namespace'}, 'Split')
-        $psm1Content[$line] = $c -join [Environment]::NewLine
+        $psm1Content[$line] = $c.Where( {-not $_.StartsWith('using module', [StringComparison]::OrdinalIgnoreCase)}) -join [Environment]::NewLine
         $using += $u
         Remove-Item $ModuleOutDir/$fileName
     }

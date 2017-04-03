@@ -1,12 +1,14 @@
+using module .\model.psm1
+using module .\Completion.psm1
+using module .\Error.psm1
 using module .\PathProcessing.psm1
 using module .\IncludeExclude.psm1
 using module .\Progress.psm1
-using module .\Completion.psm1
-using module .\Error.psm1
 
 
-function Get-FileData {
+function Import-FishTank {
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Path')]
+    [OutputType([FishTank])]
     param(
         # Specifies a path to one or more locations. Wildcards are permitted.
         [Parameter(Mandatory, Position = 0, ParameterSetName = "Path", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Path to one or more locations.")]
@@ -50,9 +52,22 @@ function Get-FileData {
             if ($wildCardFilter.ShouldOutput($aPath)) {
                 if ($pscmdlet.ShouldProcess($aPath, 'Operation')) {
                     # Process each path
-                    $pscmdlet.WriteObject($aPath)
+                    if ([IO.Path]::GetExtension($aPath) -ne '.ftk') {
+                        $psCmdlet.WriteError([Error]::UnsupportedFileFormat($aPath))
+                    }
+                    else {
+                        $pscmdlet.WriteObject($aPath)
+                    }
                 }
             }
         }
     }
+}
+
+
+function Add-Fish {
+    param(
+        [FishTank] $ft
+    )
+
 }
