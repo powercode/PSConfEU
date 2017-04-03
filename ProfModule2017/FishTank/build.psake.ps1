@@ -99,7 +99,7 @@ Task Clean -depends Init -requiredVariables OutDir {
     }
 }
 
-Task StageFiles -depends Init, Clean, BeforeStageFiles, CoreStageFiles, AfterStageFiles {
+Task StageFiles -depends Init, Clean, BeforeStageFiles, CoreStageFiles, InlineModules, AfterStageFiles {
 }
 
 Task CoreStageFiles -requiredVariables ModuleOutDir, SrcRootDir {
@@ -111,6 +111,22 @@ Task CoreStageFiles -requiredVariables ModuleOutDir, SrcRootDir {
     }
 
     Copy-Item -Path $SrcRootDir\* -Destination $ModuleOutDir -Recurse -Exclude $Exclude -Verbose:$VerbosePreference
+}
+
+Task InlineModules -requiredVariables ModuleOutDir, ModuleName {
+    $psm1Path = "$ModuleOutDir/$ModuleName.psm1"
+    $psm1Content = Get-Content $psm1Path
+    $using = @()
+    Select-String -LiteralPath $psm1Path -Pattern 'using module .\\([\w\.]+)' | Foreach-Object {
+        $line = $_.LineNumber - 1
+        $fileName = $_.Matches[0].Groups[1].Value
+        $u, $c = (Get-Content -LiteralPath $ModuleOutDir/$fileName).Where( {$_ -match '^using namespace'}, 'Split')
+        $psm1Content[$line] = $c -join [Environment]::NewLine
+        $using += $u
+        Remove-Item $ModuleOutDir/$fileName
+    }
+    $psm1Content = ($using | Sort-Object -Unique) + $psm1Content
+    Set-Content -LiteralPath $psm1Path -Value $psm1Content
 }
 
 Task Build -depends Init, Clean, BeforeBuild, StageFiles, Analyze, Sign, AfterBuild {
@@ -139,18 +155,18 @@ Task Analyze -depends StageFiles `
         'Error' {
             Assert -conditionToCheck (
                 ($analysisResult | Where-Object Severity -eq 'Error').Count -eq 0
-                ) -failureMessage 'One or more ScriptAnalyzer errors were found. Build cannot continue!'
+            ) -failureMessage 'One or more ScriptAnalyzer errors were found. Build cannot continue!'
         }
         'Warning' {
             Assert -conditionToCheck (
                 ($analysisResult | Where-Object {
-                    $_.Severity -eq 'Warning' -or $_.Severity -eq 'Error'
-                }).Count -eq 0) -failureMessage 'One or more ScriptAnalyzer warnings were found. Build cannot continue!'
+                        $_.Severity -eq 'Warning' -or $_.Severity -eq 'Error'
+                    }).Count -eq 0) -failureMessage 'One or more ScriptAnalyzer warnings were found. Build cannot continue!'
         }
         default {
             Assert -conditionToCheck (
                 $analysisResult.Count -eq 0
-                ) -failureMessage 'One or more ScriptAnalyzer issues were found. Build cannot continue!'
+            ) -failureMessage 'One or more ScriptAnalyzer issues were found. Build cannot continue!'
         }
     }
 }
@@ -163,8 +179,8 @@ Task Sign -depends StageFiles -requiredVariables CertPath, SettingsPath, ScriptS
 
     $validCodeSigningCerts = Get-ChildItem -Path $CertPath -CodeSigningCert -Recurse | Where-Object NotAfter -ge (Get-Date)
     if (!$validCodeSigningCerts) {
-        throw "There are no non-expired code-signing certificates in $CertPath. You can either install " +
-              "a code-signing certificate into the certificate store or disable script analysis in build.settings.ps1."
+        throw "There are no non-expired code-signing certificates in $CertPath. You can either install " + 
+        "a code-signing certificate into the certificate store or disable script analysis in build.settings.ps1."
     }
 
     $certSubjectNameKey = "CertSubjectName"
@@ -177,15 +193,15 @@ Task Sign -depends StageFiles -requiredVariables CertPath, SettingsPath, ScriptS
     elseif (!$CertSubjectName) {
         "A code-signing certificate has not been specified."
         "The following non-expired, code-signing certificates are available in your certificate store:"
-        $validCodeSigningCerts | Format-List Subject,Issuer,Thumbprint,NotBefore,NotAfter
+        $validCodeSigningCerts | Format-List Subject, Issuer, Thumbprint, NotBefore, NotAfter
 
         $CertSubjectName = Read-Host -Prompt 'Enter the subject name (case-sensitive) of the certificate to use for script signing'
     }
 
     # Find a code-signing certificate that matches the specified subject name.
     $certificate = $validCodeSigningCerts |
-                       Where-Object { $_.SubjectName.Name -cmatch [regex]::Escape($CertSubjectName) } |
-                       Sort-Object NotAfter -Descending | Select-Object -First 1
+        Where-Object { $_.SubjectName.Name -cmatch [regex]::Escape($CertSubjectName) } |
+        Sort-Object NotAfter -Descending | Select-Object -First 1
 
     if ($certificate) {
         $SharedProperties.CodeSigningCertificate = $certificate
@@ -202,7 +218,7 @@ Task Sign -depends StageFiles -requiredVariables CertPath, SettingsPath, ScriptS
         "Using code-signing certificate: $certificate"
         $LineSep
 
-        $files = @(Get-ChildItem -Path $ModuleOutDir\* -Recurse -Include *.ps1,*.psm1)
+        $files = @(Get-ChildItem -Path $ModuleOutDir\* -Recurse -Include *.ps1, *.psm1)
         foreach ($file in $files) {
             $setAuthSigParams = @{
                 FilePath = $file.FullName
@@ -220,9 +236,9 @@ Task Sign -depends StageFiles -requiredVariables CertPath, SettingsPath, ScriptS
     }
     else {
         $expiredCert = Get-ChildItem -Path $CertPath -CodeSigningCert -Recurse |
-                           Where-Object { ($_.SubjectName.Name -cmatch [regex]::Escape($CertSubjectName)) -and
-                                          ($_.NotAfter -lt (Get-Date)) }
-                           Sort-Object NotAfter -Descending | Select-Object -First 1
+            Where-Object { ($_.SubjectName.Name -cmatch [regex]::Escape($CertSubjectName)) -and 
+            ($_.NotAfter -lt (Get-Date)) }
+        Sort-Object NotAfter -Descending | Select-Object -First 1
 
         if ($expiredCert) {
             throw "The code-signing certificate `"$($expiredCert.SubjectName.Name)`" EXPIRED on $($expiredCert.NotAfter)."
@@ -393,16 +409,16 @@ Task Test -depends Build -requiredVariables TestRootDir, ModuleName, CodeCoverag
 
         if ($TestOutputFile) {
             $testing = @{
-                OutputFile   = $TestOutputFile
+                OutputFile = $TestOutputFile
                 OutputFormat = $TestOutputFormat
-                PassThru     = $true
-                Verbose      = $VerbosePreference
+                PassThru = $true
+                Verbose = $VerbosePreference
             }
         }
         else {
             $testing = @{
-                PassThru     = $true
-                Verbose      = $VerbosePreference
+                PassThru = $true
+                Verbose = $VerbosePreference
             }
         }
 
@@ -418,8 +434,8 @@ Task Test -depends Build -requiredVariables TestRootDir, ModuleName, CodeCoverag
         ) -failureMessage "One or more Pester tests failed, build cannot continue."
 
         if ($CodeCoverageEnabled) {
-            $testCoverage = [int]($testResult.CodeCoverage.NumberOfCommandsExecuted /
-                                  $testResult.CodeCoverage.NumberOfCommandsAnalyzed * 100)
+            $testCoverage = [int]($testResult.CodeCoverage.NumberOfCommandsExecuted / 
+                $testResult.CodeCoverage.NumberOfCommandsAnalyzed * 100)
             "Pester code coverage on specified files: ${testCoverage}%"
         }
     }
@@ -434,7 +450,7 @@ Task Publish -depends Build, Test, BuildHelp, GenerateFileCatalog, BeforePublish
 
 Task CorePublish -requiredVariables SettingsPath, ModuleOutDir {
     $publishParams = @{
-        Path        = $ModuleOutDir
+        Path = $ModuleOutDir
         NuGetApiKey = $NuGetApiKey
     }
 
@@ -448,8 +464,8 @@ Task CorePublish -requiredVariables SettingsPath, ModuleOutDir {
     else {
         $promptForKeyCredParams = @{
             DestinationPath = $SettingsPath
-            Message         = 'Enter your NuGet API key in the password field'
-            Key             = 'NuGetApiKey'
+            Message = 'Enter your NuGet API key in the password field'
+            Key = 'NuGetApiKey'
         }
 
         $cred = PromptUserForCredentialAndStorePassword @promptForKeyCredParams
@@ -458,7 +474,7 @@ Task CorePublish -requiredVariables SettingsPath, ModuleOutDir {
     }
 
     $publishParams = @{
-        Path        = $ModuleOutDir
+        Path = $ModuleOutDir
         NuGetApiKey = $NuGetApiKey
     }
 
@@ -494,8 +510,8 @@ Task RemoveApiKey -requiredVariables SettingsPath {
 Task StoreApiKey -requiredVariables SettingsPath {
     $promptForKeyCredParams = @{
         DestinationPath = $SettingsPath
-        Message         = 'Enter your NuGet API key in the password field'
-        Key             = 'NuGetApiKey'
+        Message = 'Enter your NuGet API key in the password field'
+        Key = 'NuGetApiKey'
     }
 
     PromptUserForCredentialAndStorePassword @promptForKeyCredParams
@@ -548,8 +564,8 @@ Task ShowCertSubjectName -requiredVariables SettingsPath {
     "The stored certificate is: $CertSubjectName"
 
     $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert |
-            Where-Object { $_.Subject -eq $CertSubjectName -and $_.NotAfter -gt (Get-Date) } |
-            Sort-Object -Property NotAfter -Descending | Select-Object -First 1
+        Where-Object { $_.Subject -eq $CertSubjectName -and $_.NotAfter -gt (Get-Date) } |
+        Sort-Object -Property NotAfter -Descending | Select-Object -First 1
 
     if ($cert) {
         "A valid certificate for the subject $CertSubjectName has been found"
@@ -589,7 +605,7 @@ function PromptUserForCredentialAndStorePassword {
 }
 
 function AddSetting {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSShouldProcess', '', Scope='Function')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSShouldProcess', '', Scope = 'Function')]
     param(
         [Parameter(Mandatory)]
         [string]$Key,
@@ -604,7 +620,7 @@ function AddSetting {
 
     switch ($type = $Value.GetType().Name) {
         'securestring' { $setting = $Value | ConvertFrom-SecureString }
-        default        { $setting = $Value }
+        default { $setting = $Value }
     }
 
     if (Test-Path -LiteralPath $Path) {

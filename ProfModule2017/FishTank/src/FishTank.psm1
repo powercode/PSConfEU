@@ -1,6 +1,8 @@
 using module .\PathProcessing.psm1
 using module .\IncludeExclude.psm1
-
+using module .\Progress.psm1
+using module .\Completion.psm1
+using module .\Error.psm1
 
 
 function Get-FileData {
