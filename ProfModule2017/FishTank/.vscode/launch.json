@@ -5,9 +5,9 @@
             "type": "PowerShell",
             "request": "launch",
             "name": "PowerShell Launch Pester Tests",
-            "script": "Invoke-Pester",
+            "script": "${workspaceRoot}/test/Fishtank.tests.ps1",
             "args": [],
-            "cwd": "${workspaceRoot}/test"
+            "cwd": "${workspaceRoot}"
         },
         {
             "type": "PowerShell",
