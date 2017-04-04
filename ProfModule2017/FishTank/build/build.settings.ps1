@@ -7,10 +7,10 @@ Properties {
 
     # The root directories for the module's docs, src and test.
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-    $DocsRootDir = "$PSScriptRoot\docs"
-    $SrcRootDir = "$PSScriptRoot\src"
+    $DocsRootDir = "$PSScriptRoot\..\docs"
+    $SrcRootDir = "$PSScriptRoot\..\src"
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-    $TestRootDir = "$PSScriptRoot\test"
+    $TestRootDir = "$PSScriptRoot\..\test"
 
     # The name of your module should match the basename of the PSD1 file.
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -20,7 +20,7 @@ Properties {
 
     # The $OutDir is where module files and updatable help files are staged for signing, install and publishing.
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-    $OutDir = "$PSScriptRoot\Release"
+    $OutDir = "$PSScriptRoot\..\Release"
 
     # The local installation directory for the install task. Defaults to your home Modules location.
     # The test for $profile is for the Plaster AppVeyor build machine since it doesn't define $profile.
