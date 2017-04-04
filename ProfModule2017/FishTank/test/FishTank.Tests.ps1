@@ -24,16 +24,15 @@ Describe 'Fishtank tests' {
         $p = (Resolve-Path "TestDrive:\foo.txt").ProviderPath
         $e.TargetObject | Should be $p
     }
-
-
 }
 
 Describe 'Fishtank completion' {
     It 'can complete fishtankmodel' {
         $cmp = [FishTankCompleter]::new()
         $res = $cmp.CompleteArgument("", "ModelName", "Aquarium", $null, $null)
-        $res.Count | Should be 5
+        $res.Count | Should be 3
         $res[0].ToolTip | Should Match 'Evolution 40'
+        $res[0].CompletionText[0] | Should Be "'"
     }
 }
 

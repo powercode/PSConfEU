@@ -23,8 +23,24 @@ class FishTankCompleter : IArgumentCompleter {
 
     [void] CompleteModel([List[CompletionResult]] $result, [string] $wordToComplete) {
         foreach ($ftm in [FishTankModel]::GetAll()) {
-            $result.Add([CompletionResult]::new($ftm.ModelName, $ftm.ModelName, [CompletionResultType]::ParameterValue, $ftm.ToString()))
+            if ($ftm.ModelName.StartsWith($wordToComplete, [StringComparison]::OrdinalIgnoreCase)) {
+                [FishTankCompleter]::AddCompletionValue($result, $ftm.ModelName)
+            }
         }
     }
+
+    static [void] AddCompletionValue([List[CompletionResult]] $result, [string] $name) {
+        [FishTankCompleter]::AddCompletionValue($result, $name, $name)
+    }
+
+    static [void] AddCompletionValue([List[CompletionResult]] $result, [string] $name, [string]$tooltip) {
+        $text = $name
+        if ($name.Contains(' ')) {
+            $text = "'$name'"
+        }
+
+        $result.Add([CompletionResult]::new($text, $name, [CompletionResultType]::ParameterValue, $tooltip))
+    }
+
 }
 
