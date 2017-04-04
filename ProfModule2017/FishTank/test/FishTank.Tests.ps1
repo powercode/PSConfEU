@@ -6,7 +6,7 @@ $moduleManifestPath = "$PSScriptRoot/../release/fishtank/$ModuleManifestName"
 
 Describe 'Fishtank tests' {
     It 'Imports a fishtank' {
-        set-testInconclusive
+        #set-testInconclusive
     }
 
     It 'Can ToString FishTankMOdel' {
@@ -14,6 +14,18 @@ Describe 'Fishtank tests' {
         $ft = [FishTankModel]::new("Aquarium Evolution 50", 118.5, 500, 300, 460)
         $ft.ToString() | Should Be "Aquarium Evolution 50 50x30x46 cm - 69 liter"
     }
+
+    It 'cannot import non-ftk extension' {
+        set-content testdrive:\foo.txt ''
+        Import-FishTank -LiteralPath TestDrive:\foo.txt -ErrorVariable e -ErrorAction:SilentlyContinue
+        $e | Should not Be $Null
+        $e.FullyQualifiedErrorId | Should be 'InvalidFileFormat,Import-FishTank'
+        $e.CategoryInfo.Category | Should be 'InvalidArgument'
+        $p = (Resolve-Path "TestDrive:\foo.txt").ProviderPath
+        $e.TargetObject | Should be $p
+    }
+
+
 }
 
 Describe 'Fishtank completion' {
