@@ -70,6 +70,11 @@
             <Width>15</Width>
             <Alignment>Right</Alignment>
           </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>ObjSize</Label>
+            <Width>8</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
           <TableRowEntry>
@@ -88,6 +93,10 @@
               <TableColumnItem>
                 <FormatString>N0</FormatString>
                 <PropertyName>Count</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <FormatString>N0</FormatString>
+                <PropertyName>BytesPerObj</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>

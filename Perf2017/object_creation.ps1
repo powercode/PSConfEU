@@ -1,7 +1,11 @@
 using namespace System.Collections.Generic
 using namespace System.Diagnostics
 using module .\DotNetPerson.dll
+
+param([switch] $NoDryrun)
+
 clear-host
+Write-Host ("`n" * 5)
 
 
 $perfInstance = [PerformanceCounterCategory]::new('Process').GetInstanceNames().Where( {$_ -match 'powershell#?'}).Foreach( {
@@ -33,10 +37,10 @@ $sweProcessID = ($sweCounters | Select-String $processId -Context 0, 1).Context.
 "\$swedotNetMemory($perfInstance)\$sweBytesInAll"
 "\$swedotNetMemory($perfInstance)\Process-ID"
 
-$perfInstance = get-counter '\Process(powershell*)\Process-ID' -ea:0 | 
-    ForEach-Object CounterSamples | 
-    Where-Object CookedValue -eq $pid | 
-    Where-Object Path -match '\((?<inst>[^\)]+)\)' | 
+$perfInstance = get-counter '\Process(powershell*)\Process-ID' -ea:0 |
+    ForEach-Object CounterSamples |
+    Where-Object CookedValue -eq $pid |
+    Where-Object Path -match '\((?<inst>[^\)]+)\)' |
     ForEach-Object {$matches.inst}
 
 function Get-BytesInAllHeaps {
@@ -46,7 +50,7 @@ function Get-BytesInAllHeaps {
 
 enum ObjType {
     DotNet
-    PSClass    
+    PSClass
     Hashtable
     PSObject
 }
@@ -84,7 +88,7 @@ class Tester {
                 $l = [List[DotNet.Person]]::new($count)
                 foreach ($i in 1 .. $count) {
                     $l.Add([DotNet.Person]::new("Staffan", 45))
-                } 
+                }
             }
             'PSClass' {
                 $l = [List[Person]]::new($count)
@@ -94,7 +98,7 @@ class Tester {
             }
             'PSObject' {
                 $l = [List[PSObject]]::new($count)
-                foreach ($i in 1 .. $count) {                    
+                foreach ($i in 1 .. $count) {
                     $l.Add([Tester]::CreatePSObject("Staffan", 45))
                 }
             }
@@ -108,14 +112,15 @@ class Tester {
         $l = $null
     }
 
-    static [psobject] TestCreation([ObjType] $type, [int] $count) {                        
+    static [psobject] TestCreation([ObjType] $type, [int] $count) {
+
         [GC]::Collect(2)
-        [GC]::Collect(2)        
-        $memBaseLine = Get-BytesInAllHeaps 
+        [GC]::Collect(2)
+        $memBaseLine = Get-BytesInAllHeaps
         $sw = [Stopwatch]::StartNew()
         [Tester]::CreateObjects($type, $count)
         $elapsed = $sw.Elapsed
-        $mem = Get-BytesInAllHeaps 
+        $mem = Get-BytesInAllHeaps
         $memDiff = $mem - $memBaseLine
         [GC]::Collect(2)
         return [PsCustomObject] @{
@@ -123,9 +128,11 @@ class Tester {
             Mem = $memDiff
             Time = $elapsed
             Count = $count
+            BytesPerObj = [int] ($memdiff / $Count)
             PSTypeName = 'ObjAllocResult'
         }
-      
+
+
     }
 }
 
@@ -133,15 +140,22 @@ $count = 1000000
 
 [GC]::Collect(2)
 
-[Enum]::GetValues([ObjType]) | ForEach-Object {
-    [void][Tester]::TestCreation($_, $count)
+if ($dryryn) {
+    [Enum]::GetValues([ObjType]) | ForEach-Object {
+        [void][Tester]::TestCreation($_, $count / 10)
+    }
 }
 [GC]::Collect(2)
 
+$i = 0
 1 .. 3| foreach-object {
+    $pass = $_
     [Enum]::GetValues([ObjType]) | ForEach-Object {
-        #  [Tester]::TestCreation($_, $count)
-    } 
+        $i++
+        Write-Progress -id 1 -activity CreateObject -status "creating $count $_" -percentComplete ($i * 100 / 12)
+
+        [Tester]::TestCreation($_, $count)
+    }
+    Write-Progress -id 1 -activity CreateObject -status "creating $count $_" -completed
 }
 
- 
