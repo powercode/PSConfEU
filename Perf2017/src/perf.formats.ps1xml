@@ -46,7 +46,7 @@
     <View>
       <Name>Default</Name>
       <ViewSelectedBy>
-        <TypeName>ObjAllocResult</TypeName>
+        <TypeName>ObjectCreationResult</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>
@@ -96,7 +96,7 @@
               </TableColumnItem>
               <TableColumnItem>
                 <FormatString>N0</FormatString>
-                <PropertyName>BytesPerObj</PropertyName>
+                <PropertyName>BytesPerObject</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>

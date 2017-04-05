@@ -5,9 +5,8 @@
 }
 
 Update-TypeData -Force -TypeName Result -DefaultKeyPropertySet ItemPerSecond
-Update-FormatData -AppendPath .\perf.formats.ps1xml
 
-function Measure-CommandTime{
+function Measure-CommandTime {
     param(
         [scriptblock] $Expression,
         [int] $Count,

@@ -1,15 +1,15 @@
 ﻿using module .\measure.psm1
 
 $count = 100000
-$value = 1..$Count
+$value = 1 .. $Count
 
 
-function Write-TestData{
+function Write-TestData {
     param(
         [int[]]$value
     )
-    end{
-        foreach($v in $value){
+    end {
+        foreach ($v in $value) {
             Write-output $v
         }
     }
@@ -17,12 +17,12 @@ function Write-TestData{
 
 Measure-CommandTime {Write-TestData $value} -Count $count -Label 'Foreach Write-Output'
 
-function Write-TestData{
+function Write-TestData {
     param(
         [int[]]$value
     )
-    end{
-        foreach($v in $value){
+    end {
+        foreach ($v in $value) {
             $v
         }
     }
@@ -30,35 +30,35 @@ function Write-TestData{
 
 Measure-CommandTime {Write-TestData $value} -Count $count -Label 'Foreach $v'
 
-function Write-TestData2{
+function Write-TestData2 {
     param(
         [int[]]$value
     )
-    end{
+    end {
         Write-output $value
     }
 }
 
 Measure-CommandTime {Write-TestData2 $value} -Count $count -Label 'Write-Output enumerate'
 
-function Write-TestData3{
+function Write-TestData3 {
     [cmdletBinding()]
     param(
         [int[]]$value
     )
-    end{
+    end {
         $PSCmdlet.WriteObject($value, $true)
     }
 }
 
 Measure-CommandTime {Write-TestData3 } -Count $count -Label '$pscmdlet enumerate'
 
-function Write-TestData4{
+function Write-TestData4 {
     [cmdletBinding()]
     param(
         [int[]]$value
     )
-    end{
+    end {
         $PSCmdlet.WriteObject($value, $false)
     }
 }
