@@ -175,7 +175,7 @@ Task Analyze -depends StageFiles `
 }
 
 Task BuildDotNet -requiredVariables CSSrcDir, ModuleOutDir, ModuleName {
-    $csc = Search-Everything -extension exe -PathInclude MSBuild csc.exe -Global | Get-Item | Sort-Object VersionInfo -Descending | Select-object -First 1
+    $csc = Search-Everything -extension exe -PathInclude MSBuild csc.exe -Global | Get-Item | Sort-Object {$_.VersionInfo.FileVersion} -Descending | Select-object -First 1
     if ($csc.VersionInfo.FileVersion -lt '2.0.0.0') {
         throw "csc.exe not found"
     }
