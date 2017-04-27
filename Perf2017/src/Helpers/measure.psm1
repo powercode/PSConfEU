@@ -1,12 +1,13 @@
 ﻿class Result {
     $Time
     $ItemPerSecond
+    $TimeInSeconds
     $Label
 }
 
 Update-TypeData -Force -TypeName Result -DefaultKeyPropertySet ItemPerSecond
 
-function Measure-CommandTime {
+function Measure-CommandEx {
     param(
         [scriptblock] $Expression,
         [int] $Count,
@@ -17,6 +18,7 @@ function Measure-CommandTime {
     [Result] @{
         Time = $time
         ItemPerSecond = $Count / $time.TotalSeconds
+        TimeInSeconds = $time.TotalSeconds
         Label = $label
     }
     Write-Progress -Activity Performance -Status "Measuring the execution time of" -CurrentOperation $Label -Completed

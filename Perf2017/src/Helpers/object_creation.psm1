@@ -42,6 +42,7 @@ class ObjectCreationResult {
     [TimeSpan] $time
     [int] $Count
     [int] $BytesPerObject
+    [long] $Ticks
 
     ObjectCreationResult([ObjType] $Type, [long] $Mem, [TimeSpan] $time, [int] $Count, [int] $BytesPerObject) {
         $this.Type = $type
@@ -49,6 +50,7 @@ class ObjectCreationResult {
         $this.Time = $time
         $this.Count = $count
         $this.BytesPerObject = [int] ($mem / $Count)
+        $this.Ticks = $time.Ticks
     }
 }
 
@@ -121,7 +123,7 @@ class Tester {
 
     [psobject] TestCreation([ObjType] $type) {
         $local:count = $this.Count
-        [GC]::Collect(3)
+        [GC]::Collect(2, [GCCollectionMode]::Forced, $true, $true)
         Start-Sleep -seconds 1
         [Runtime.GCSettings]::LargeObjectHeapCompactionMode = 'CompactOnce'
         [GC]::Collect(3)
@@ -133,7 +135,7 @@ class Tester {
         $mem = $this.Counter.GetBytesInAllHeaps()
         $o = $null;
         $memDiff = $mem - $memBaseLine
-        [GC]::Collect(3)
+        [GC]::Collect(2, [GCCollectionMode]::Forced, $true, $true)
         [GC]::WaitForPendingFinalizers()
         return [ObjectCreationResult]::new($type, $memDiff, $elapsed, $count, [int] ($memdiff / $Count))
 

@@ -1,6 +1,6 @@
 using module .\release\Perf\Perf.psd1
-$OutputEncoding = [System.Text.Encoding]::UTF8
+[CmdletBinding()]
+param()
 
-Test-ObjectCreationPerformance
-
-Remove-Module Perf
+Test-ObjectCreationPerformance -ov res
+$res | out-chart -Property type, mem, ticks -ChartType Column -ChartSettings @{LabelFormatString = 'N0'}

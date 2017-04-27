@@ -128,7 +128,7 @@ Task InlineModules -requiredVariables ModuleOutDir, ModuleName, NonSrcDirs {
     $psm1Content = ($using | Sort-Object -Unique) + $psm1Content
     Set-Content -LiteralPath $psm1Path -Value $psm1Content
     foreach ($d in $NonSrcDirs) {
-        Remove-Item $ModuleOutDir/$d -Recurse
+        Remove-Item $ModuleOutDir/$d -Recurse -Force
     }
 }
 

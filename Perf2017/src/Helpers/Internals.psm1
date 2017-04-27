@@ -4,6 +4,7 @@ $count = 100000
 $value = 1 .. $Count
 
 
+
 function Write-TestData {
     param(
         [int[]]$value
@@ -15,7 +16,7 @@ function Write-TestData {
     }
 }
 
-Measure-CommandTime {Write-TestData $value} -Count $count -Label 'Foreach Write-Output'
+Measure-CommandEx {Write-TestData $value} -Count $count -Label 'Foreach Write-Output'
 
 function Write-TestData {
     param(
@@ -28,7 +29,7 @@ function Write-TestData {
     }
 }
 
-Measure-CommandTime {Write-TestData $value} -Count $count -Label 'Foreach $v'
+Measure-CommandEx {Write-TestData $value} -Count $count -Label 'Foreach $v'
 
 function Write-TestData2 {
     param(
@@ -39,7 +40,7 @@ function Write-TestData2 {
     }
 }
 
-Measure-CommandTime {Write-TestData2 $value} -Count $count -Label 'Write-Output enumerate'
+Measure-CommandEx {Write-TestData2 $value} -Count $count -Label 'Write-Output enumerate'
 
 function Write-TestData3 {
     [cmdletBinding()]
@@ -51,7 +52,7 @@ function Write-TestData3 {
     }
 }
 
-Measure-CommandTime {Write-TestData3 } -Count $count -Label '$pscmdlet enumerate'
+Measure-CommandEx {Write-TestData3 } -Count $count -Label '$pscmdlet enumerate'
 
 function Write-TestData4 {
     [cmdletBinding()]
@@ -63,4 +64,4 @@ function Write-TestData4 {
     }
 }
 
-Measure-CommandTime {Write-TestData4 } -Count $count -Label '$pscmdlet noenumerate'
+Measure-CommandEx {Write-TestData4 } -Count $count -Label '$pscmdlet noenumerate'
