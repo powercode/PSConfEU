@@ -1,28 +1,57 @@
-﻿using module .\measure.psm1
+﻿using namespace System.Management.Automation
+using module .\measure.psm1
 
 enum FileAccessKind {
     ChildItemName
     ChildItem
-    ProviderChildItem
     DotNetEnum
     FastDotNetEnum
 }
 
-function Get-AllFile {
-    [CmdletBinding()]
-    param(
-        [FileAccessKind] $Kind = [FildAccessKind]::ChildItem
-    )
-    switch ($Kind) {
-        ([FileAccessKind]::ChildItemName) {  Get-ChildItem -Recurse -File -Name C:\windows\System32 -force -ErrorAction:SilentlyContinue}
-        ([FileAccessKind]::ChildItem) { Get-ChildItem -Recurse -File C:\windows\System32 -force -ErrorAction:SilentlyContinue}
-        ([FileAccessKind]::ProviderChildItem) { $pscmdlet.WriteObject($pscmdlet.InvokeProvider.ChildItem.Get((, 'C:\Windows\System32'), $true, $true, $true)) }
-        ([FileAccessKind]::DotNetEnum) { $pscmdlet.WriteObject([DirectoryEnumerator]::GetDirectoryFiles('c:\windows\system32', '*.*', 'AllDirectories'), $true) }
-        ([FileAccessKind]::FastDotNetEnum) { $pscmdlet.WriteObject([PowerCode.FastDirectoryEnumerator]::EnumerateFiles('c:\windows\system32', '*.*', 'AllDirectories'), $true) }
-    }
+class FileIterResult {
+    [FileAccessKind] $Kind
+    [TimeSpan] $Time
+    [int] $Count
+    $Items
+    [double] $TimeMs
 }
 
 
+class FileSystemIterator {
 
+    static [FileIterResult] Iterate([string] $Path, [FileAccessKind] $Kind) {
+        $Path = (Resolve-Path $Path).ProviderPath
+        $sw = [Diagnostics.Stopwatch]::StartNew()
+        $r = [FileIterResult] @{
+            Kind = $Kind
+        }
+
+        switch ($Kind) {
+            ([FileAccessKind]::ChildItemName) {
+                $r.Items = @(Get-ChildItem -Recurse -File -Name -LiteralPath $Path -force -ErrorAction:SilentlyContinue)
+                break
+            }
+            ([FileAccessKind]::ChildItem) {
+                $r.Items = @(Get-ChildItem -Recurse -File -LiteralPath $Path -force -ErrorAction:SilentlyContinue)
+                break
+            }
+            ([FileAccessKind]::DotNetEnum) {
+                $r.Items = @([DirectoryEnumerator]::GetDirectoryFiles($Path, '*.*', 'AllDirectories'))
+                break
+            }
+            ([FileAccessKind]::FastDotNetEnum) {
+                $r.Items = @([PowerCode.FastDirectoryEnumerator]::EnumerateFiles($Path, '*.*', 'AllDirectories', $true))
+                break
+            }
+        }
+        $e = $sw.Elapsed
+        $r.Time = $e
+        $r.TimeMs = $e.TotalMilliseconds
+        if ($r.Items) {
+            $r.Count = $R.Items.Count
+        }
+        return $r
+    }
+}
 
 
