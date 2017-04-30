@@ -17,6 +17,16 @@ class FishTankCompleter : IArgumentCompleter {
             'ModelName' {
                 $this.CompleteModel($result, $wordToComplete)
             }
+            'Id' {
+                (Get-FishTank).Foreach{
+                    $id = $_.Id
+                    $location = $_.Location
+                    $s = "$id - $location"
+                    if ($s.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase)) {
+                        [FishTankCompleter]::AddCompletionValue($result, $id, $s, $_.Model.ToString())
+                    }
+                }
+            }
         }
         return $result
     }
@@ -30,16 +40,19 @@ class FishTankCompleter : IArgumentCompleter {
     }
 
     static [void] AddCompletionValue([List[CompletionResult]] $result, [string] $name) {
-        [FishTankCompleter]::AddCompletionValue($result, $name, $name)
+        [FishTankCompleter]::AddCompletionValue($result, $name, $name, $name)
     }
 
     static [void] AddCompletionValue([List[CompletionResult]] $result, [string] $name, [string]$tooltip) {
+        [FishTankCompleter]::AddCompletionValue($result, $name, $name, $tooltip)
+    }
+
+    static [void] AddCompletionValue([List[CompletionResult]] $result, [string] $name, [string] $listItem, [string] $tooltip) {
         $text = $name
         if ($name.Contains(' ')) {
             $text = "'$name'"
         }
-        $mi = $MyInvocation
-        $result.Add([CompletionResult]::new($text, $name, [CompletionResultType]::ParameterValue, $tooltip))
+        $result.Add([CompletionResult]::new($text, $listItem, [CompletionResultType]::ParameterValue, $tooltip))
     }
 }
 

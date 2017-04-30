@@ -54,6 +54,12 @@ Describe 'Fishtank tests' {
     It 'can export fishtanks' {
         Get-FishTank | Export-fishtank -Path TestDrive:\fishtank_export.ftk
     }
+    It 'can Remove tanks' {
+        $t = Add-FishTank -ModelName 'Aquarium Evolution 40' -Location Livingroom
+        Get-FishTank | Remove-FishTank -Force
+        $c = @(Get-FishTank)
+        $c.Length | Should be 0
+    }
 }
 
 Describe 'Fishtank completion' {
@@ -63,6 +69,13 @@ Describe 'Fishtank completion' {
         $res.Count | Should be 3
         $res[0].ToolTip | Should Match 'Evolution 40'
         $res[0].CompletionText[0] | Should Be "'"
+    }
+
+    It 'can complete id' {
+        $t = Add-FishTank -ModelName 'Aquarium Evolution 40' -Location Livingroom
+        $cmp = [FishTankCompleter]::new()
+        $res = $cmp.CompleteArgument("", "Id", "", $null, $null)
+        $res.Count | Should be 1
     }
 }
 

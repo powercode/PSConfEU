@@ -169,25 +169,32 @@ function Add-FishTank {
 
 
 function Remove-FishTank {
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [int[]] $Id)
+        [ArgumentCompleter([FishTankCompleter])]
+        [int[]] $Id,
+        [switch] $Force)
     process {
         foreach ($tankId in $id) {
             $found = $false
             for ($i = 0; $i -lt $state.Count; $i++) {
-                if ($state[$i].Id -eq $tankId) {
-                    $state.RemoveAt($i)
+                $tank = $state[$i]
+                if ($tank.Id -eq $tankId) {
+                    if ($Force -or $PSCmdlet.ShouldProcess("Remove-FishTank", "$($tank.Model), $($tank.Location)")) {
+                        $state.RemoveAt($i)
+                    }
                     $found = $true
                     break
                 }
             }
-            if (-not $found) {
-                Write-Error -Message "No Tank was found with id '$tankId'" -TargetObject $tankId
-            }
+        }
+        if (-not $found) {
+            Write-Error -Message "No Tank was found with id '$tankId'" -TargetObject $tankId
         }
     }
 }
+
 
 function Clear-FishTank {
     param(
