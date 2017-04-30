@@ -68,6 +68,7 @@
         'Remove-FishTank'
         'Clear-FishTank'
         'Get-FishTank'
+        'Get-FishTankModel'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -95,13 +96,13 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags = @('Fishtank', 'Example', 'Module', 'Design')
 
             # A URL to the license for this module.
-            # LicenseUri = ''
+            LicenseUri = 'https://github.com/powercode/PSConfEU/blob/master/LICENSE'
 
             # A URL to the main website for this project.
-            # ProjectUri = ''
+            ProjectUri = 'https://github.com/powercode/PSConfEU/tree/master/ProfModule2017/FishTank'
 
             # A URL to an icon representing this module.
             # IconUri = ''

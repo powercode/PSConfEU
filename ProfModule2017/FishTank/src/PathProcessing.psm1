@@ -85,10 +85,10 @@ class PathProcessor {
         return $retVal
     }
 
-    static [string[]] ResolveNonExistingPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
-        $retVal = [string[]]::new($paths.Length)
+    static [PathResult[]] ResolveNonExistingPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
+        $retVal = [PathResult[]]::new($paths.Length)
         for ($i = 0; $i -lt $retVal.Length; $i++) {
-            $retVal[$i] = $pathIntrinsics.GetUnresolvedProviderPathFromPSPath($paths[$i])
+            $retVal[$i] = [PathResult]::new($pathIntrinsics.GetUnresolvedProviderPathFromPSPath($paths[$i]))
         }
         return $retVal
     }

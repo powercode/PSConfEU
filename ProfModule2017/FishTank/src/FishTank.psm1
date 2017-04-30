@@ -7,7 +7,12 @@ using module .\Progress.psm1
 
 [List[FishTank]] $state = [List[FishTank]]::new(50)
 
-
+function Get-FishTankModel {
+    [CmdletBinding()]
+    [OutputType([FishTankModel])]
+    param()
+    [FishTankModel]::GetAll()
+}
 
 function Import-FishTank {
     [CmdletBinding(DefaultParameterSetName = 'Path')]
@@ -103,20 +108,29 @@ function Export-FishTank {
     }
     end {
         $pathResult = $null
+
         if ($psCmdlet.ParameterSetName -eq 'Path') {
             $pathResult = [PathProcessor]::ResolveUniquePath($Path, $PSCmdlet.SessionState.Path)
         }
         else {
             $pathResult = [PathProcessor]::ResolveLiteralPath($LiteralPath, $PSCmdlet.SessionState.Path)
         }
+        if ($pathResult.IsError() -and $pathResult.GetError().CategoryInfo.Category -eq [ErrorCategory]::ObjectNotFound) {
+            $pathResult = [PathProcessor]::ResolveNonExistingPaths($Path, $PSCmdlet.SessionState.Path)
+        }
+
         if ($PSCmdlet.ShouldProcess("Export-FishTank", $pathResult)) {
             if ($pathResult.IsError()) {
-                $PSCmdlet.WriteError($pathResult.Error)
+                $PSCmdlet.WriteError($pathResult.GetError())
             }
             else {
-                $p = $pathResult.Path
+                $p = $pathResult.GetPath()
                 if ($NoClobber -and (Test-Path $p)) {
                     throw [PathProcessor]::CreatePathAlreadyExistsError($p)
+                }
+                $dir = [IO.Path]::GetDirectoryName($p)
+                if (![IO.Directory]::Exists($dir)) {
+                    mkdir $dir | Out-Null
                 }
                 $tanks | ConvertTo-Json -Depth 5 -Compress | Set-Content -LiteralPath $p -Force:$force
             }
@@ -208,9 +222,11 @@ function Get-FishTank {
         [string[]] $Exclude
     )
     $filter = [IncludeExcludeFilter]::new($Include, $Exclude)
+    $out = [List[FishTank]]::new()
     foreach ($tank in $state) {
         if ($filter.ShouldOutput($tank.Location)) {
-            $pscmdlet.WriteObject($tank)
+            $out.Add($tank)
         }
     }
+    $pscmdlet.WriteObject($out, $true)
 }

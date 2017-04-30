@@ -42,9 +42,17 @@ Describe 'Fishtank tests' {
 
     It 'can add fish tank' {
         $t = Add-FishTank -ModelName 'Aquarium Evolution 40' -Location Livingroom
+        $t.Model.ModelName | Should be 'Aquarium Evolution 40'
+    }
 
-        $n = Get-FishTank
+    It 'can get fish tank' {
 
+        $n = Get-FishTank -include Livingroom
+        $n.Location | Select-Object -first 1  | Should be Livingroom
+    }
+
+    It 'can export fishtanks' {
+        Get-FishTank | Export-fishtank -Path TestDrive:\fishtank_export.ftk
     }
 }
 
