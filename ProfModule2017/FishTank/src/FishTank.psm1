@@ -159,7 +159,7 @@ function Add-FishTank {
     }
     $tankModel = [FishTankModel]::GetAll().Where{$_.Modelname -eq $ModelName}
     if (-not $tankModel) {
-        throw "Cannot find model of type $ModelName"
+        throw [Error]::CannotFindFishTankModel($ModelName)
     }
     $id++
     $tank = [FishTank]::new($id, $tankModel[0], $Location)
@@ -187,9 +187,9 @@ function Remove-FishTank {
                     break
                 }
             }
-        }
-        if (-not $found) {
-            Write-Error -Message "No Tank was found with id '$tankId'" -TargetObject $tankId
+            if (-not $found) {
+                $pscmdlet.WriteError([Error]::CannotFindFishTankId($tankId))
+            }
         }
     }
 }

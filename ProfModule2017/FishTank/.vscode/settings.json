@@ -2,6 +2,6 @@
     // When enabled, will trim trailing whitespace when you save a file.
     "files.trimTrailingWhitespace": true,
     "search.exclude": {
-        "Release": true
+        "./Release/*": true
     }
 }
