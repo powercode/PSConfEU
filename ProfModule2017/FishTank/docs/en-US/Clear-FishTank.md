@@ -11,8 +11,14 @@ schema: 2.0.0
 
 ## SYNTAX
 
+### fishtank (Default)
 ```
-Clear-FishTank [-FishTank] <FishTank[]> [-Hurry] [<CommonParameters>]
+Clear-FishTank -FishTank <FishTank[]> [-Hurry] [<CommonParameters>]
+```
+
+### Id
+```
+Clear-FishTank [-Id] <Int32[]> [-Hurry] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -34,11 +40,11 @@ PS C:\> {{ Add example code here }}
 
 ```yaml
 Type: FishTank[]
-Parameter Sets: (All)
+Parameter Sets: fishtank
 Aliases: 
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
@@ -54,6 +60,21 @@ Aliases:
 
 Required: False
 Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Id
+{{Fill Id Description}}
+
+```yaml
+Type: Int32[]
+Parameter Sets: Id
+Aliases: 
+
+Required: True
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

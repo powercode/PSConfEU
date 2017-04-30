@@ -11,8 +11,19 @@ schema: 2.0.0
 
 ## SYNTAX
 
+### Default (Default)
 ```
-Get-FishTank [[-Include] <String[]>] [[-Exclude] <String[]>] [<CommonParameters>]
+Get-FishTank [<CommonParameters>]
+```
+
+### id
+```
+Get-FishTank [-Id <Int32[]>] [<CommonParameters>]
+```
+
+### default
+```
+Get-FishTank [-Include <String[]>] [-Exclude <String[]>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -34,11 +45,26 @@ PS C:\> {{ Add example code here }}
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: default
 Aliases: 
 
 Required: False
-Position: 1
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Id
+{{Fill Id Description}}
+
+```yaml
+Type: Int32[]
+Parameter Sets: id
+Aliases: 
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -49,11 +75,11 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: default
 Aliases: 
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

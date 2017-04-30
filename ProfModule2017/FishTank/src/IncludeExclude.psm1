@@ -16,7 +16,7 @@ class IncludeExcludeFilter {
         if ($includes) {
             $includePatterns = [WildcardPattern[]]::new($includes.Length)
             for ($i = 0; $i -lt $includes.Length; ++$i) {
-                $includePatterns[$i] = [WildcardPattern]::new($includes[$i], $options)
+                $includePatterns[$i] = [WildcardPattern]::new($includes[$i], $options )
             }
             $this.includes = $includePatterns
         }

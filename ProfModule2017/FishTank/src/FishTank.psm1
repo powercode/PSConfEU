@@ -33,8 +33,10 @@ function Import-FishTank {
         [ValidateNotNullOrEmpty()]
         [string[]] $LiteralPath,
 
+        [SupportsWildcards()]
         [string[]] $Include,
 
+        [SupportsWildcards()]
         [string[]] $Exclude
     )
 
@@ -197,14 +199,26 @@ function Remove-FishTank {
 
 
 function Clear-FishTank {
+    [CmdletBinding(DefaultParameterSetName = "fishtank")]
     param(
-        [Parameter(ValueFromPipeline, Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Id', Position = 0)]
+        [int[]] $Id,
+
+        [Parameter(ValueFromPipeline, Mandatory, ParameterSetName = "fishtank")]
         [FishTank[]] $FishTank,
         [switch] $Hurry
     )
 
     begin { $tanks = [List[FishTank]]::new(20) }
-    process { $tanks.AddRange($FishTank) }
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'fishtank') {
+            $tanks.AddRange($FishTank)
+        }
+        else {
+            $tanks = Get-FishTank -Id $id
+            $tanks.AddRange($tanks)
+        }
+    }
     end {
 
         $pm = [ProgressManager]::new("Clean fishtank", "Removing goo", $tanks.Count)
@@ -222,17 +236,33 @@ function Clear-FishTank {
 }
 
 function Get-FishTank {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([FishTank])]
     param(
+        [Parameter(ParameterSetName = 'id')]
+        [int[]] $Id,
+
+        [Parameter(ParameterSetName = 'default')]
+        [SupportsWildcards()]
         [string[]] $Include,
+
+        [Parameter(ParameterSetName = 'default')]
+        [SupportsWildcards()]
         [string[]] $Exclude
     )
     $filter = [IncludeExcludeFilter]::new($Include, $Exclude)
     $out = [List[FishTank]]::new()
+    $isId = $Id.Length -gt 0
     foreach ($tank in $state) {
-        if ($filter.ShouldOutput($tank.Location)) {
-            $out.Add($tank)
+        if ($isId) {
+            if ($tank.Id -in $Id) {
+                $out.Add($tank)
+            }
+        }
+        else {
+            if ($filter.ShouldOutput($tank.Location)) {
+                $out.Add($tank)
+            }
         }
     }
     $pscmdlet.WriteObject($out, $true)
