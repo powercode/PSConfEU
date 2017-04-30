@@ -35,18 +35,37 @@ class PathResult {
 }
 
 class PathProcessor {
+
+    static [PathResult] ResolveLiteralPath([string] $path, [PathIntrinsics] $pathIntrinsics) {
+        if (!(Test-Path -LiteralPath $path)) {
+            return [PathProcessor]::CreatePathNotFoundErrorRecord($path)
+        }
+        else {
+            return $pathIntrinsics.GetUnresolvedProviderPathFromPSPath($path)
+        }
+    }
+
     static [PathResult[]] ResolveLiteralPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
         $retVal = [PathResult[]]::new($paths.Length)
         for ($i = 0; $i -lt $retVal.Length; $i++) {
-            $aPath = $paths[$i]
-            if (!(Test-Path -LiteralPath $aPath)) {
-                $retVal[$i] = [PathProcessor]::CreatePathNotFoundErrorRecord($aPath)
-            }
-            else {
-                $retVal[$i] = $pathIntrinsics.GetUnresolvedProviderPathFromPSPath($aPath)
-            }
+            $retVal[$i] = [PathProcessor]::ResolveLiteralPath($paths[$i], $pathIntrinsics)
         }
         return $retVal
+    }
+
+    <# Error if it resolves to more than one path #>
+    static [PathResult] ResolveUniquePath([string] $path, [PathIntrinsics] $pathIntrinsics) {
+        if (!(Test-Path -Path $path)) {
+            return [PathProcessor]::CreatePathNotFoundErrorRecord($path)
+        }
+        else {
+            $provider = $null
+            $resolved = $pathIntrinsics.GetResolvedProviderPathFromPSPath($path, [ref] $provider)
+            if ($resolved.Count -eq 1) {
+                return $resolved[0]
+            }
+        }
+        return [PathProcessor]::CreatePathResolvesToMultipleFilesErrorRecord($path)
     }
 
     static [List[PathResult]] ResolvePaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
@@ -78,6 +97,13 @@ class PathProcessor {
         $ex = [ItemNotFoundException]::new("Cannot find path '$path' because it does not exist.")
         $category = [System.Management.Automation.ErrorCategory]::ObjectNotFound
         $errRecord = [ErrorRecord]::new($ex, 'PathNotFound', $category, $path)
+        return $errRecord
+    }
+
+    static [ErrorRecord] CreatePathResolvesToMultipleFilesErrorRecord([string] $path) {
+        $ex = [ArgumentException]::new("The '$path' resolves to more than one file.")
+        $category = [System.Management.Automation.ErrorCategory]::InvalidArgument
+        $errRecord = [ErrorRecord]::new($ex, 'PathNotUnique', $category, $path)
         return $errRecord
     }
 }

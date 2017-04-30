@@ -6,6 +6,7 @@ $moduleManifestPath = "$PSScriptRoot/../release/fishtank/$ModuleManifestName"
 
 Describe 'Fishtank tests' {
     It 'Imports a fishtank' {
+        [FishTank]::new()
         #set-testInconclusive
     }
 
