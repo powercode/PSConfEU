@@ -147,10 +147,12 @@ function Add-FishTank {
     if (-not $tankModel) {
         throw "Cannot find model of type $ModelName"
     }
-    $tank = [FishTank]::new($id + 1, $tankModel, $Location)
+    $id++
+    $tank = [FishTank]::new($id, $tankModel[0], $Location)
     $state.Add($tank)
     $tank
 }
+
 
 function Remove-FishTank {
     param(
@@ -208,7 +210,7 @@ function Get-FishTank {
     $filter = [IncludeExcludeFilter]::new($Include, $Exclude)
     foreach ($tank in $state) {
         if ($filter.ShouldOutput($tank.Location)) {
-            $pscmdlet.WriteObject($State, $true)
+            $pscmdlet.WriteObject($tank)
         }
     }
 }

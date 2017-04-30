@@ -18,6 +18,7 @@ class FishTankModel {
     [int] $Width
 
     FishTankModel() {}
+
     FishTankModel([string] $modelname, [float] $price, [int] $length, [int] $width, [int] $height) {
         $this.ModelName = $modelname
         $this.Volume = $height * $length * $width / 1000000
@@ -48,11 +49,11 @@ class Fish {
     [DateTime] $Aquired
 
     Fish() {}
+
     Fish([string] $name, [datetime] $aquired) {
         $this.Name = $name
         $this.Aquired = $aquired
     }
-
 }
 
 class FishTank {
@@ -69,7 +70,9 @@ class FishTank {
         }
         Start-Sleep -Seconds $time
     }
+
     FishTank() {}
+
     FishTank([int] $number, [FishTankModel] $model, [string] $location) {
         $this.Id = $number
         $this.Model = $model
