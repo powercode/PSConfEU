@@ -41,6 +41,5 @@ class FishTankCompleter : IArgumentCompleter {
         $mi = $MyInvocation
         $result.Add([CompletionResult]::new($text, $name, [CompletionResultType]::ParameterValue, $tooltip))
     }
-
 }
 

@@ -189,13 +189,13 @@ function Clear-FishTank {
         $pm = [ProgressManager]::new("Clean fishtank", "Removing goo", $tanks.Count)
         $i = 0
         try {
-            foreach ($ft in $FishTank) {
-                $progress.WriteProgress( $pm.GetCurrentProgressRecord($i++, $ft.Id))
+            foreach ($ft in $tanks) {
+                $PSCmdlet.WriteProgress( $pm.GetCurrentProgressRecord($i++, "Cleaning fishtank in $($ft.Location)"))
                 $ft.Clean($Hurry)
             }
         }
         finally {
-            $progress.WriteProgress( $pm.GetCompletedRecord($i++, $ft.Id))
+            $PSCmdlet.WriteProgress($pm.GetCompletedRecord())
         }
     }
 }
