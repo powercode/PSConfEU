@@ -202,6 +202,7 @@ function Clear-FishTank {
     [CmdletBinding(DefaultParameterSetName = "fishtank")]
     param(
         [Parameter(Mandatory, ParameterSetName = 'Id', Position = 0)]
+        [ArgumentCompleter([FishTankCompleter])]
         [int[]] $Id,
 
         [Parameter(ValueFromPipeline, Mandatory, ParameterSetName = "fishtank")]
@@ -240,6 +241,7 @@ function Get-FishTank {
     [OutputType([FishTank])]
     param(
         [Parameter(ParameterSetName = 'id')]
+        [ArgumentCompleter([FishTankCompleter])]
         [int[]] $Id,
 
         [Parameter(ParameterSetName = 'default')]
