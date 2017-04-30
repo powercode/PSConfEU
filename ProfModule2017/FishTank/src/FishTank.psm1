@@ -180,7 +180,7 @@ function Remove-FishTank {
             for ($i = 0; $i -lt $fishTanks.Count; $i++) {
                 $tank = $fishTanks[$i]
                 if ($tank.Id -eq $tankId) {
-                    if ($Force -or $PSCmdlet.ShouldProcess("Remove-FishTank", "$($tank.Model), $($tank.Location)")) {
+                    if ($Force -or $PSCmdlet.ShouldProcess("$($tank.Model), $($tank.Location)", "Remove-FishTank")) {
                         $fishTanks.RemoveAt($i)
                     }
                     $found = $true
