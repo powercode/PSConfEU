@@ -106,5 +106,12 @@ class PathProcessor {
         $errRecord = [ErrorRecord]::new($ex, 'PathNotUnique', $category, $path)
         return $errRecord
     }
+
+    static [ErrorRecord] CreatePathAlreadyExistsError([string] $path) {
+        $ex = [IO.IOException]::new("File '$path' already exists.")
+        $category = [System.Management.Automation.ErrorCategory]::ResourceExists
+        $errRecord = [ErrorRecord]::new($ex, 'NoClobber', $category, $path)
+        return $errRecord
+    }
 }
 

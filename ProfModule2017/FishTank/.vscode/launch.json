@@ -7,7 +7,7 @@
             "name": "PowerShell Launch Pester Tests",
             "script": "${workspaceRoot}/test/Fishtank.tests.ps1",
             "args": [],
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}/test"
         },
         {
             "type": "PowerShell",

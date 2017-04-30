@@ -38,7 +38,7 @@ class FishTankCompleter : IArgumentCompleter {
         if ($name.Contains(' ')) {
             $text = "'$name'"
         }
-
+        $mi = $MyInvocation
         $result.Add([CompletionResult]::new($text, $name, [CompletionResultType]::ParameterValue, $tooltip))
     }
 

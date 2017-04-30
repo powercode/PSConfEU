@@ -1,6 +1,6 @@
 ---
 external help file: FishTank-help.xml
-online version:
+online version: 
 schema: 2.0.0
 ---
 
@@ -58,7 +58,7 @@ Accept wildcard characters: False
 ```yaml
 Type: FishTank[]
 Parameter Sets: (All)
-Aliases:
+Aliases: 
 
 Required: True
 Position: Named
@@ -73,7 +73,7 @@ Accept wildcard characters: False
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases:
+Aliases: 
 
 Required: False
 Position: Named
@@ -103,7 +103,7 @@ Accept wildcard characters: False
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases:
+Aliases: 
 
 Required: False
 Position: Named
@@ -118,7 +118,7 @@ Path to one or more locations.
 ```yaml
 Type: String
 Parameter Sets: Path
-Aliases:
+Aliases: 
 
 Required: True
 Position: 0

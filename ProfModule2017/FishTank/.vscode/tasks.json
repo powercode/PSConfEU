@@ -92,6 +92,7 @@
             "isTestCommand": true,
             "showOutput": "always",
             "args": [
+                "Set-Location ${workspaceRoot}/test;",
                 "Write-Host 'Invoking Pester';Invoke-psake ./build/build.psake.ps1 -taskList Build | out-null; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true};",
                 "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
             ],

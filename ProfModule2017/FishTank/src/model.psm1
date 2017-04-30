@@ -17,6 +17,7 @@ class FishTankModel {
     # Width in mm
     [int] $Width
 
+    FishTankModel() {}
     FishTankModel([string] $modelname, [float] $price, [int] $length, [int] $width, [int] $height) {
         $this.ModelName = $modelname
         $this.Volume = $height * $length * $width / 1000000
@@ -46,6 +47,7 @@ class Fish {
     [string] $Name
     [DateTime] $Aquired
 
+    Fish() {}
     Fish([string] $name, [datetime] $aquired) {
         $this.Name = $name
         $this.Aquired = $aquired
@@ -56,16 +58,22 @@ class Fish {
 class FishTank {
     [int] $Id
     [FishTankModel] $Model
-    [Fish[]] $Fish
+    [string] $Location
+    [List[Fish]] $Fish
 
 
-    [void] Clean([cmdlet] $cmdlet ) {
-        Start-Sleep -Seconds 7
+    [void] Clean([bool] $fast ) {
+        $time = 7
+        if ($fast) {
+            $time = 1
+        }
+        Start-Sleep -Seconds $time
     }
-
-    FishTank([int] $number, [string] $modelName, [int] $volume) {
-        $this.ModelNumber = $number
-        $this.ModuleName = $modelName
-        $this.Volume = $volume
+    FishTank() {}
+    FishTank([int] $number, [FishTankModel] $model, [string] $location) {
+        $this.Id = $number
+        $this.Model = $model
+        $this.Location = $location
+        $this.Fish = [List[Fish]]::new(20)
     }
 }

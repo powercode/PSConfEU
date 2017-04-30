@@ -5,6 +5,9 @@ using module .\PathProcessing.psm1
 using module .\IncludeExclude.psm1
 using module .\Progress.psm1
 
+[List[FishTank]] $state = [List[FishTank]]::new(50)
+
+
 
 function Import-FishTank {
     [CmdletBinding(DefaultParameterSetName = 'Path')]
@@ -55,8 +58,14 @@ function Import-FishTank {
                     $psCmdlet.WriteError([Error]::UnsupportedFileFormat($aPath))
                 }
                 else {
-                    Get-Content -LiteralPath $aPath | ConvertFrom-Json | ForEach-Object {
-                        [FishTank] $_
+                    (Get-Content -LiteralPath $aPath | ConvertFrom-Json) | ForEach-Object {
+                        $model = [FishTankModel] $_.Model
+
+                        $ft = [FishTank]::new($_.Id, $model, $_.Location)
+                        $fish = [Fish[]]$_.fish
+                        $ft.Fish.AddRange($fish)
+                        $state.Add($ft)
+                        $ft
                     }
                 }
             }
@@ -105,7 +114,11 @@ function Export-FishTank {
                 $PSCmdlet.WriteError($pathResult.Error)
             }
             else {
-                $tanks | ConvertTo-Json -Depth 5 -Compress | Set-Content -LiteralPath $pathResult.Path
+                $p = $pathResult.Path
+                if ($NoClobber -and (Test-Path $p)) {
+                    throw [PathProcessor]::CreatePathAlreadyExistsError($p)
+                }
+                $tanks | ConvertTo-Json -Depth 5 -Compress | Set-Content -LiteralPath $p -Force:$force
             }
         }
     }
@@ -113,23 +126,89 @@ function Export-FishTank {
 
 
 
-function Add-Fish {
+function Add-FishTank {
+    [OutputType([FishTank])]
     param(
         [Parameter(Mandatory)]
-        [FishTank] $FishTank,
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [ArgumentCompleter([FishTankCompleter])]
+        [string] $ModelName,
+        [Parameter(Mandatory)]
+        [string] $Location,
+        [Parameter(ValueFromPipeline)]
         [Fish[]] $Fish
     )
-    foreach ($a in $b) {}
+    $id = 0
+    foreach ($tank in $state) {
+        if ($tank.id -gt $id) {
+            $id = $tank.Id
+        }
+    }
+    $tankModel = [FishTankModel]::GetAll().Where{$_.Modelname -eq $ModelName}
+    if (-not $tankModel) {
+        throw "Cannot find model of type $ModelName"
+    }
+    $tank = [FishTank]::new($id + 1, $tankModel, $Location)
+    $state.Add($tank)
+    $tank
 }
 
-function Clean-FishTank {
+function Remove-FishTank {
+    param(
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [int[]] $Id)
+    process {
+        foreach ($tankId in $id) {
+            $found = $false
+            for ($i = 0; $i -lt $state.Count; $i++) {
+                if ($state[$i].Id -eq $tankId) {
+                    $state.RemoveAt($i)
+                    $found = $true
+                    break
+                }
+            }
+            if (-not $found) {
+                Write-Error -Message "No Tank was found with id '$tankId'" -TargetObject $tankId
+            }
+        }
+    }
+}
+
+function Clear-FishTank {
     param(
         [Parameter(ValueFromPipeline, Mandatory)]
-        [FishTank[]] $FishTank
+        [FishTank[]] $FishTank,
+        [switch] $Hurry
     )
 
-    foreach ($ft in $FishTank) {
+    begin { $tanks = [List[FishTank]]::new(20) }
+    process { $tanks.AddRange($FishTank) }
+    end {
 
+        $pm = [ProgressManager]::new("Clean fishtank", "Removing goo", $tanks.Count)
+        $i = 0
+        try {
+            foreach ($ft in $FishTank) {
+                $progress.WriteProgress( $pm.GetCurrentProgressRecord($i++, $ft.Id))
+                $ft.Clean($Hurry)
+            }
+        }
+        finally {
+            $progress.WriteProgress( $pm.GetCompletedRecord($i++, $ft.Id))
+        }
+    }
+}
+
+function Get-FishTank {
+    [CmdletBinding()]
+    [OutputType([FishTank])]
+    param(
+        [string[]] $Include,
+        [string[]] $Exclude
+    )
+    $filter = [IncludeExcludeFilter]::new($Include, $Exclude)
+    foreach ($tank in $state) {
+        if ($filter.ShouldOutput($tank.Location)) {
+            $pscmdlet.WriteObject($State, $true)
+        }
     }
 }
