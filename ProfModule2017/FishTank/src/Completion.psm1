@@ -14,19 +14,8 @@ class FishTankCompleter : IArgumentCompleter {
     ) {
         $result = [List[CompletionResult]]::new(10)
         switch ($parameter) {
-            'ModelName' {
-                $this.CompleteModel($result, $wordToComplete)
-            }
-            'Id' {
-                (Get-FishTank).Foreach{
-                    $id = $_.Id
-                    $location = $_.Location
-                    $s = "$id - $location"
-                    if ($s.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase)) {
-                        [FishTankCompleter]::AddCompletionValue($result, $id, $s, $_.Model.ToString())
-                    }
-                }
-            }
+            'ModelName' { $this.CompleteModel($result, $wordToComplete) }
+            'Id' { $this.CompleteId($result, $wordToComplete) }
         }
         return $result
     }
@@ -35,6 +24,17 @@ class FishTankCompleter : IArgumentCompleter {
         foreach ($ftm in [FishTankModel]::GetAll()) {
             if ($ftm.ModelName.StartsWith($wordToComplete, [StringComparison]::OrdinalIgnoreCase)) {
                 [FishTankCompleter]::AddCompletionValue($result, $ftm.ModelName)
+            }
+        }
+    }
+
+    [void] CompleteId([List[CompletionResult]] $result, [string] $wordToComplete) {
+        (Get-FishTank).Foreach{
+            $id = $_.Id
+            $location = $_.Location
+            $s = "$id - $location"
+            if ($s.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase)) {
+                [FishTankCompleter]::AddCompletionValue($result, $id, $s, $_.Model.ToString())
             }
         }
     }
