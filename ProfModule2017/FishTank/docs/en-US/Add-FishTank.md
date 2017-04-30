@@ -7,7 +7,7 @@ schema: 2.0.0
 # Add-FishTank
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Adds a new fishtank
 
 ## SYNTAX
 
@@ -16,16 +16,16 @@ Add-FishTank [-ModelName] <String> [-Location] <String> [[-Fish] <Fish[]>] [<Com
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+Adds a new fishtank to the system specifying the model and a location
 
 ## EXAMPLES
 
 ### Example 1
 ```
-PS C:\> {{ Add example code here }}
+PS C:\> Add-fishtank -Model 'Aquarium Evolution 40' -Location Livingroom
 ```
 
-{{ Add example description here }}
+Adds a new fishtank in the livingroom
 
 ## PARAMETERS
 
