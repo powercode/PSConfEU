@@ -5,7 +5,7 @@ using module .\PathProcessing.psm1
 using module .\IncludeExclude.psm1
 using module .\Progress.psm1
 
-[List[FishTank]] $state = [List[FishTank]]::new(50)
+[List[FishTank]] $fishTanks = [List[FishTank]]::new(50)
 
 function Get-FishTankModel {
     [CmdletBinding()]
@@ -71,7 +71,7 @@ function Import-FishTank {
                         $ft = [FishTank]::new($_.Id, $model, $_.Location)
                         $fish = [Fish[]]$_.fish
                         $ft.Fish.AddRange($fish)
-                        $state.Add($ft)
+                        $fishTanks.Add($ft)
                         $ft
                     }
                 }
@@ -140,8 +140,6 @@ function Export-FishTank {
     }
 }
 
-
-
 function Add-FishTank {
     [OutputType([FishTank])]
     param(
@@ -154,7 +152,7 @@ function Add-FishTank {
         [Fish[]] $Fish
     )
     $id = 0
-    foreach ($tank in $state) {
+    foreach ($tank in $fishTanks) {
         if ($tank.id -gt $id) {
             $id = $tank.Id
         }
@@ -165,10 +163,9 @@ function Add-FishTank {
     }
     $id++
     $tank = [FishTank]::new($id, $tankModel[0], $Location)
-    $state.Add($tank)
+    $fishTanks.Add($tank)
     $tank
 }
-
 
 function Remove-FishTank {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
@@ -180,11 +177,11 @@ function Remove-FishTank {
     process {
         foreach ($tankId in $id) {
             $found = $false
-            for ($i = 0; $i -lt $state.Count; $i++) {
-                $tank = $state[$i]
+            for ($i = 0; $i -lt $fishTanks.Count; $i++) {
+                $tank = $fishTanks[$i]
                 if ($tank.Id -eq $tankId) {
                     if ($Force -or $PSCmdlet.ShouldProcess("Remove-FishTank", "$($tank.Model), $($tank.Location)")) {
-                        $state.RemoveAt($i)
+                        $fishTanks.RemoveAt($i)
                     }
                     $found = $true
                     break
@@ -196,7 +193,6 @@ function Remove-FishTank {
         }
     }
 }
-
 
 function Clear-FishTank {
     [CmdletBinding(DefaultParameterSetName = "fishtank")]
@@ -257,7 +253,7 @@ function Get-FishTank {
     $filter = [IncludeExcludeFilter]::new($Include, $Exclude)
     $out = [List[FishTank]]::new()
     $isId = $Id.Length -gt 0
-    foreach ($tank in $state) {
+    foreach ($tank in $fishTanks) {
         if ($isId) {
             if ($tank.Id -in $Id) {
                 $out.Add($tank)
