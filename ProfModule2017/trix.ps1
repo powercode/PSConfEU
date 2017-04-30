@@ -44,3 +44,15 @@ Register-ArgumentCompleter -CommandName Get-ModuleParameter -ParameterName Modul
     param($command, $parameter, $wordToComplete, $ast, $fake)
     (Get-Module).Where{$_.Name.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase)}
 }
+
+Register-ArgumentCompleter -CommandName Import-Fishtank -ParameterName Path -ScriptBlock {
+    param($command, $parameter, $wordtocomplete, $ast, $fake)
+    $separams = @{
+        Extension = 'ftk'
+        Global = $true
+    }
+    if ($wordtocomplete) {$separams.PathInclude = $wordToComplete}
+
+    Search-Everything @separams
+}
+
