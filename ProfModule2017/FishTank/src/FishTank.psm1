@@ -1,7 +1,7 @@
 using module .\model.psm1
 using module .\Completion.psm1
 using module .\Error.psm1
-using module .\PathProcessing.psm1
+using module .\PathResolution.psm1
 using module .\IncludeExclude.psm1
 using module .\Progress.psm1
 
@@ -47,10 +47,10 @@ function Import-FishTank {
     process {
         $pathResults = $null
         if ($psCmdlet.ParameterSetName -eq 'Path') {
-            $pathResults = [PathProcessor]::ResolvePaths($Path, $psCmdlet.SessionState.Path)
+            $pathResults = [PathResolution]::ResolvePaths($Path, $psCmdlet.SessionState.Path)
         }
         else {
-            $pathResults = [PathProcessor]::ResolveLiteralPaths($LiteralPath, $psCmdlet.SessionState.Path)
+            $pathResults = [PathResolution]::ResolveLiteralPaths($LiteralPath, $psCmdlet.SessionState.Path)
         }
 
         foreach ($pathRes in $pathResults) {
@@ -112,13 +112,13 @@ function Export-FishTank {
         $pathResult = $null
 
         if ($psCmdlet.ParameterSetName -eq 'Path') {
-            $pathResult = [PathProcessor]::ResolveUniquePath($Path, $PSCmdlet.SessionState.Path)
+            $pathResult = [PathResolution]::ResolveUniquePath($Path, $PSCmdlet.SessionState.Path)
         }
         else {
-            $pathResult = [PathProcessor]::ResolveLiteralPath($LiteralPath, $PSCmdlet.SessionState.Path)
+            $pathResult = [PathResolution]::ResolveLiteralPath($LiteralPath, $PSCmdlet.SessionState.Path)
         }
         if ($pathResult.IsError() -and $pathResult.GetError().CategoryInfo.Category -eq [ErrorCategory]::ObjectNotFound) {
-            $pathResult = [PathProcessor]::ResolveNonExistingPaths($Path, $PSCmdlet.SessionState.Path)
+            $pathResult = [PathResolution]::ResolveNonExistingPaths($Path, $PSCmdlet.SessionState.Path)
         }
 
         if ($PSCmdlet.ShouldProcess("Export-FishTank", $pathResult)) {
@@ -128,7 +128,7 @@ function Export-FishTank {
             else {
                 $p = $pathResult.GetPath()
                 if ($NoClobber -and (Test-Path $p)) {
-                    throw [PathProcessor]::CreatePathAlreadyExistsError($p)
+                    throw [PathResolution]::CreatePathAlreadyExistsError($p)
                 }
                 $dir = [IO.Path]::GetDirectoryName($p)
                 if (![IO.Directory]::Exists($dir)) {

@@ -34,11 +34,11 @@ class PathResult {
     }
 }
 
-class PathProcessor {
+class PathResolution {
 
     static [PathResult] ResolveLiteralPath([string] $path, [PathIntrinsics] $pathIntrinsics) {
         if (!(Test-Path -LiteralPath $path)) {
-            return [PathProcessor]::CreatePathNotFoundErrorRecord($path)
+            return [PathResolution]::CreatePathNotFoundErrorRecord($path)
         }
         else {
             return $pathIntrinsics.GetUnresolvedProviderPathFromPSPath($path)
@@ -48,7 +48,7 @@ class PathProcessor {
     static [PathResult[]] ResolveLiteralPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
         $retVal = [PathResult[]]::new($paths.Length)
         for ($i = 0; $i -lt $retVal.Length; $i++) {
-            $retVal[$i] = [PathProcessor]::ResolveLiteralPath($paths[$i], $pathIntrinsics)
+            $retVal[$i] = [PathResolution]::ResolveLiteralPath($paths[$i], $pathIntrinsics)
         }
         return $retVal
     }
@@ -56,7 +56,7 @@ class PathProcessor {
     <# Error if it resolves to more than one path #>
     static [PathResult] ResolveUniquePath([string] $path, [PathIntrinsics] $pathIntrinsics) {
         if (!(Test-Path -Path $path)) {
-            return [PathProcessor]::CreatePathNotFoundErrorRecord($path)
+            return [PathResolution]::CreatePathNotFoundErrorRecord($path)
         }
         else {
             $provider = $null
@@ -65,14 +65,14 @@ class PathProcessor {
                 return $resolved[0]
             }
         }
-        return [PathProcessor]::CreatePathResolvesToMultipleFilesErrorRecord($path)
+        return [PathResolution]::CreatePathResolvesToMultipleFilesErrorRecord($path)
     }
 
     static [List[PathResult]] ResolvePaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
         $retVal = [List[PathResult]]::new($paths.Length)
         foreach ($aPath in $paths) {
             if (!(Test-Path -Path $aPath)) {
-                $retVal.Add([PathProcessor]::CreatePathNotFoundErrorRecord($aPath))
+                $retVal.Add([PathResolution]::CreatePathNotFoundErrorRecord($aPath))
             }
             else {
                 $provider = $null
