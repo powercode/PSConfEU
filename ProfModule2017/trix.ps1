@@ -13,4 +13,34 @@ function ctor($name = 'ClassName') {
     $ctor | Set-Clipboard
     $ctor
 }
-    
+
+
+
+class CommandParameter {
+    [string] $Command
+    [string] $ParameterName
+    [string] $Metadata
+}
+
+function Get-ModuleParameter {
+    [OutputType([CommandParameter])]
+    param([string] $ModuleName)
+    (Get-Command -module $ModuleName).Foreach{
+        $command = $_
+        $_.Parameters.Values.Where{
+            $_.name -notmatch '(Error|Warning|Information|Pipeline|Out)(Action|Variable)|Debug|Verbose|OutBuffer|WhatIf|Confirm'
+        }.Foreach{
+            [CommandParameter] @{
+                Command = $command
+                ParameterName = $_.Name
+                MetaData = $_
+            }
+        }
+
+    }
+}
+
+Register-ArgumentCompleter -CommandName Get-ModuleParameter -ParameterName ModuleName -ScriptBlock {
+    param($command, $parameter, $wordToComplete, $ast, $fake)
+    (Get-Module).Where{$_.Name.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase)}
+}

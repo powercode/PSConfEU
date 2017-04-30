@@ -200,6 +200,7 @@ function Remove-FishTank {
 
 function Clear-FishTank {
     [CmdletBinding(DefaultParameterSetName = "fishtank")]
+    [Alias('clft')]
     param(
         [Parameter(Mandatory, ParameterSetName = 'Id', Position = 0)]
         [ArgumentCompleter([FishTankCompleter])]
@@ -239,6 +240,7 @@ function Clear-FishTank {
 function Get-FishTank {
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([FishTank])]
+    [Alias('gft')]
     param(
         [Parameter(ParameterSetName = 'id')]
         [ArgumentCompleter([FishTankCompleter])]
