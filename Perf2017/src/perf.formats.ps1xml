@@ -110,6 +110,7 @@
         <TypeName>MemberAccessResult</TypeName>
         <TypeName>LoopResult</TypeName>
         <TypeName>FileIterResult</TypeName>
+        <TypeName>WebDownloadResult</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>

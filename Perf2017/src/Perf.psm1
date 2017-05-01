@@ -5,6 +5,8 @@ using module .\Helpers\filesystem.psm1
 using module .\Helpers\pipeline.psm1
 using module .\Helpers\progress.psm1
 
+Set-StrictMode -Version latest
+
 function Measure-ObjectCreationPerformance {
     [CmdletBinding()]
     param(
@@ -121,6 +123,58 @@ function Measure-MemberAccess {
         }
     }
     finally {
+        $pr.WriteCompleted()
+    }
+}
+
+
+enum Downloadkind {
+    WebClient
+    IWR
+    IWRProgress
+}
+
+class WebDownloadResult {
+    [Downloadkind] $Kind
+    [TimeSpan] $time
+    [long] $TimeMs
+    [long] $Ticks
+
+    WebDownloadResult([Downloadkind] $Kind, [TimeSpan] $time) {
+        $this.Kind = $Kind
+        $this.Time = $time
+        $this.TimeMs = $time.TotalMilliseconds
+        $this.Ticks = $time.Ticks
+    }
+}
+
+
+function Measure-WebDownload {
+    [CmdletBinding()]
+    [OutputType([MemberAccessResult])]
+    param([uri] $Uri)
+
+    $kinds = [Enum]::GetNames([Downloadkind])
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Web Download", "filling the pipes", $kinds.Count)
+    $tmpFile = "$env:temp\webdownload.zip"
+    try {
+        $kinds | ForEach-Object {
+            $pr.WriteNext($_)
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            switch ($_) {
+                ([Downloadkind]::IWRProgress) {
+                    $ProgressPreference = 'SilentlyContinue'
+                    Invoke-WebRequest -Uri $Uri -OutFile $tmpFile
+                }
+                ([Downloadkind]::IWR) {Invoke-WebRequest -Uri $Uri -OutFile $tmpFile }
+                ([Downloadkind]::WebClient) {[System.Net.WebClient]::new().DownloadFile($uri, $tmpFile)}
+            }
+            $e = $sw.Elapsed
+            return [WebDownloadResult]::new($_, $e)
+        }
+    }
+    finally {
+        Remove-Item $tmpFile
         $pr.WriteCompleted()
     }
 }
