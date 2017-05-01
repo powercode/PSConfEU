@@ -90,8 +90,8 @@ function Measure-MemberAccess {
 
     [Enum]::GetNames([TestMethodKind]) | ForEach-Object {
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
-        $to = [TestObject]::new(4711)
-        $to.AddTest($_, 42, $Count)
+        $to = [TestObject]::new()
+        $to.AddTest($_, $Count)
         $e = $sw.Elapsed
         return [MemberAccessResult]::new($_, $e, $count)
     }

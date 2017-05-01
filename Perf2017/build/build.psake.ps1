@@ -186,7 +186,7 @@ Task BuildDotNet -requiredVariables CSSrcDir, ModuleOutDir, ModuleName {
         $outdll = "$ModuleOutDir/$base.dll"
         $dllInfo = (get-item $outdll -ea:0)
         if (!$dllInfo -or $dllInfo.LastWriteTime -lt (get-item $file).LastWriteTime) {
-            & $csc.fullname /nologo $file /out:$outDll /optimize+ /t:library
+            & $csc.fullname /nologo $file /out:$outDll /optimize+ /t:library /r:C:\Users\Staffan\.nuget\packages\microsoft.powershell.5.referenceassemblies\1.0.0\lib\net4\System.Management.Automation.dll
         }
     }
     $files = Get-ChildItem -File $ModuleOutDir | Foreach-Object Name

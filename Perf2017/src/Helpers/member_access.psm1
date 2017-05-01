@@ -5,6 +5,7 @@ using namespace System.Management.Automation.Runspaces
 enum TestMethodKind {
     CodeMethod
     ScriptMethod
+    ClassMethod
     DotNet
     Function
 }
@@ -14,48 +15,39 @@ enum TestPropertyKind {
     Function
 }
 
-function Add {
-    [OutputType([long])]
-    param([int]$i, [int] $j)
-    return [long] $i + $j
+function AddFourthNight {
+    [OutputType([datetime])]
+    param([datetime]$d)
+    return $d.AddDays(14)
 }
 
-class CodeMethods {
-    static [int] Add([psobject] $obj, [int] $i) {
-        $o = [TestObject] $obj
-        return $o.Number + $i
-    }
-}
 
 class TestObject {
-    [int] $Number
 
-    TestObject([int] $number) {
-        $this.number = $number
-    }
+    [void] AddTest([TestMethodKind] $kind, $count) {
 
-    [void] AddTest([TestMethodKind] $kind, [int] $number, $count) {
-        $n = $this.number
+        $d = [datetime]::now
         foreach ($i in 1..$Count) {
             switch ($kind) {
-                ([TestMethodKind]::CodeMethod) { $this.AddCode($number)}
-                ([TestMethodKind]::ScriptMethod) { $this.AddScript($number) }
-                ([TestMethodKind]::Function) { Add -i $n -j $number}
-                ([TestMethodKind]::DotNet) { [Dotnet.SimpleMath]::Add($n, $number) }
+                ([TestMethodKind]::CodeMethod) { $d.AddFortnightCode()}
+                ([TestMethodKind]::ClassMethod) { [TestObject]::Add($d)}
+                ([TestMethodKind]::ScriptMethod) { $d.AddFortnightScript() }
+                ([TestMethodKind]::Function) { AddFourthNight -d $d }
+                ([TestMethodKind]::DotNet) { $d.AddDays(14) }
             }
         }
     }
 
-    static [long] Add([int] $i, [int] $j) {
-        return $i + $j
+    static [datetime] Add([datetime] $d) {
+        return $d.AddDays(14)
     }
 
 }
 
-$td = [TypeData]::new([TestObject])
-$td.Members.Add("AddScript", [ScriptMethodData]::new("AddScript", {param([int] $i) return [long] $this.Number + $i}))
-$codeMethod = [CodeMethods].GetMethod("Add", ([BindingFlags]::Static -bor [BindingFlags]::Public -bor [BindingFlags]::IgnoreCase))
-$td.Members.Add("AddCode", [CodeMethodData]::new("AddCode", $codeMethod))
+$td = [TypeData]::new([datetime])
+$td.Members.Add("AddFortnightScript", [ScriptMethodData]::new("AddFortnightScript", {param([int] $i) return [long] $this.Number + $i}))
+$codeMethod = [Dotnet.CodeMethods].GetMethod("AddFortnight", ([BindingFlags]::Static -bor [BindingFlags]::Public -bor [BindingFlags]::IgnoreCase))
+$td.Members.Add("AddFortnightCode", [CodeMethodData]::new("AddFortnightCode", $codeMethod))
 
 Update-TypeData -TypeData $td -Force
 

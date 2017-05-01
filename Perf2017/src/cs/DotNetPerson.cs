@@ -1,3 +1,5 @@
+using System;
+using System.Management.Automation;
 namespace DotNet
 {
     public class Person
@@ -14,6 +16,18 @@ namespace DotNet
         public override string ToString()
         {
             return Name;
+        }
+    }
+
+    public static class CodeMethods
+    {
+        public static DateTime AddFortnight(PSObject o)
+        {
+            if (o.BaseObject is DateTime d)
+            {
+                return d.AddDays(14);
+            }
+            throw new ArgumentException("object not a datetime");
         }
     }
 
