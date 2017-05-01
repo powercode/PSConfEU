@@ -57,7 +57,7 @@
           </TableColumnHeader>
           <TableColumnHeader>
             <Label>Time</Label>
-            <Width>13</Width>
+            <Width>8</Width>
             <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
@@ -83,7 +83,7 @@
                 <PropertyName>Type</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <FormatString>hh\:mm\:ss\.fff</FormatString>
+                <FormatString>ss\.fff</FormatString>
                 <PropertyName>Time</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
@@ -112,12 +112,12 @@
         <TableHeaders>
           <TableColumnHeader>
             <Label>Kind</Label>
-            <Width>10</Width>
+            <Width>30</Width>
             <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
             <Label>Time</Label>
-            <Width>13</Width>
+            <Width>8</Width>
             <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
@@ -133,7 +133,7 @@
                 <PropertyName>Kind</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <FormatString>hh\:mm\:ss\.fff</FormatString>
+                <FormatString>ss\.fff</FormatString>
                 <PropertyName>Time</PropertyName>
               </TableColumnItem>
               <TableColumnItem>

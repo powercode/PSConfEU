@@ -1,6 +1,6 @@
 using module .\release\Perf
 [CmdletBinding()]
-param( $Count = 100000, [switch] $AsArray)
+param( $Count = 10000, [switch] $AsArray)
 
 if ($AsArray) {
     Measure-ArraySumIter -Count $Count -ov res

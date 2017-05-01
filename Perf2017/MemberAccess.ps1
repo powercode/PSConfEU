@@ -1,6 +1,6 @@
-using module .\release\Perf\Perf.psd1
+using module .\release\Perf
 [CmdletBinding()]
-param([int] $Count = 10000)
+param( $Count = 1000)
 
-Measure-ObjectOutput -ov res -Count $count
+Measure-MemberAccess -count $count -ov res
 $res | Sort-Object TimeMS -Descending | Out-Chart -Property Kind, Ticks -ChartType Column -ChartSettings @{LabelFormatString = 'N0'}

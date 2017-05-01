@@ -42,6 +42,7 @@ class ObjectCreationResult {
     [TimeSpan] $time
     [int] $Count
     [int] $BytesPerObject
+    [long] $TimeMs
     [long] $Ticks
 
     ObjectCreationResult([ObjType] $Type, [long] $Mem, [TimeSpan] $time, [int] $Count, [int] $BytesPerObject) {
@@ -50,6 +51,7 @@ class ObjectCreationResult {
         $this.Time = $time
         $this.Count = $count
         $this.BytesPerObject = [int] ($mem / $Count)
+        $this.TimeMs = $time.TotalMilliseconds
         $this.Ticks = $time.Ticks
     }
 }

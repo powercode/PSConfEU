@@ -1,20 +1,25 @@
 using module ..\release\Perf\Perf.psd1
 
 Describe 'Performance tests' {
+    It 'Measures object member access' {
+        $res = Measure-MemberAccess -Count 10000
+        $res.Count | Should be 4
+    }
+
     It 'Measures object output' {
-        $res = Measure-ObjectOutput -Count 1000000
-        $res.Count | Should be 5
+        $res = Measure-ObjectOutput -Count 10000
+        $res.Count | Should be 7
     }
 
     It 'Creates objects' {
-        $res = Measure-ObjectCreationPerformance -count 1000
+        $res = Measure-ObjectCreationPerformance -count 10
         $res.Count | Should be 4
         foreach ($r in $res) {
             $r -is [ObjectCreationResult] | Should Be true
         }
     }
     It 'Iterates arrays' {
-        $res = Measure-ArraySumIter -Count 1000000
+        $res = Measure-Sum -Count 1000000
         $res.Count | Should be 4
         foreach ($r in $res) {
             $r -is [LoopResult] | Should Be true
@@ -23,7 +28,7 @@ Describe 'Performance tests' {
     }
 
     It 'Iterates piped arrays' {
-        $res = Measure-ArrayPipeIter -count 1000
+        $res = Measure-Sum -count 1000 -pipeline
         $res.Count | Should be 4
         foreach ($r in $res) {
             $r -is [LoopResult] | Should Be true

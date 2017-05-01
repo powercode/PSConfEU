@@ -27,37 +27,26 @@ function Measure-ObjectCreationPerformance {
     Write-Progress -id 1 -activity CreateObject -status "creating $count $_" -completed
 }
 
-function Measure-ArraySumIter {
+function Measure-Sum {
     [CmdletBinding()]
     [OutputType([LoopResult])]
     param(
         [int] $Count = 1000000,
-        [switch] $Chart
+        [switch] $Chart,
+        [switch] $Pipeline
     )
     [Enum]::GetValues([LoopKind]).Foreach{
+
+
         $sw = [Diagnostics.Stopwatch]::StartNew()
-
-        $sum = Get-Sum -Number (1..$Count) -Kind $_
-
+        if ($Pipeline) {
+            $sum = (1..$Count) | Get-Sum -Kind $_
+        }
+        else {
+            $sum = Get-Sum -Number (1..$Count) -Kind $_
+        }
         $e = $sw.Elapsed
-        [LoopResult] @{  Kind = $_ ; Sum = $sum; Time = $e; TimeMs = $e.TotalMilliseconds }
-    }
-}
-
-function Measure-ArrayPipeIter {
-    [CmdletBinding()]
-    [OutputType([LoopResult])]
-    param(
-        [int] $Count = 1000000,
-        [switch] $Chart
-    )
-    [Enum]::GetValues([LoopKind]).Foreach{
-        $sw = [Diagnostics.Stopwatch]::StartNew()
-
-        $sum = (1..$Count) | Get-Sum -Kind $_
-
-        $e = $sw.Elapsed
-        [LoopResult] @{  Kind = $_ ; Sum = $sum; Time = $e; TimeMs = $e.TotalMilliseconds }
+        [LoopResult] @{  Kind = $_ ; Sum = $sum; Time = $e; TimeMs = $e.TotalMilliseconds; Ticks = $e.Ticks}
     }
 }
 
@@ -75,6 +64,7 @@ function Measure-FileSystemIteration {
 }
 
 function Measure-ObjectOutput {
+    [CmdletBinding()]
     [OutputType([ObjectOutputResult])]
     param(
         [Parameter(Mandatory)]
@@ -89,6 +79,21 @@ function Measure-ObjectOutput {
             Count = $count
             Time = $e
             TimeMs = $e.TotalMilliseconds
+            Ticks = $e.Ticks
         }
+    }
+}
+
+function Measure-MemberAccess {
+    [CmdletBinding()]
+    [OutputType([MemberAccessResult])]
+    param([int] $Count)
+
+    [Enum]::GetNames([TestMethodKind]) | ForEach-Object {
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        $to = [TestObject]::new(4711)
+        $to.AddTest($_, 42, $Count)
+        $e = $sw.Elapsed
+        return [MemberAccessResult]::new($_, $e, $count)
     }
 }
