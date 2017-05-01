@@ -43,7 +43,6 @@ class FishTankModel {
     }
 }
 
-
 class Fish {
     [string] $Name
     [DateTime] $Aquired
