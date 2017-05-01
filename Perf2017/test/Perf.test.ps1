@@ -13,7 +13,7 @@ Describe 'Performance tests' {
 
     It 'Creates objects' {
         $res = Measure-ObjectCreationPerformance -count 10
-        $res.Count | Should be 4
+        $res.Count | Should be 5
         foreach ($r in $res) {
             $r -is [ObjectCreationResult] | Should Be true
         }

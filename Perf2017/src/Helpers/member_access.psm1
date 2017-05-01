@@ -9,6 +9,11 @@ enum TestMethodKind {
     Function
 }
 
+enum TestPropertyKind {
+    DotNetProperty
+    Function
+}
+
 function Add {
     [OutputType([long])]
     param([int]$i, [int] $j)

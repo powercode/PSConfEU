@@ -1,5 +1,4 @@
 ﻿using namespace System.Management.Automation
-using module .\measure.psm1
 
 enum FileAccessKind {
     ChildItemName

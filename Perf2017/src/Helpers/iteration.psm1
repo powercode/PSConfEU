@@ -1,4 +1,4 @@
-﻿using module .\measure.psm1
+﻿
 enum LoopKind {  ForeachObject; ForeachLang ; MagicForeach; For }
 
 class LoopResult {

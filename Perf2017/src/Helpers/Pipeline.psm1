@@ -1,5 +1,4 @@
-﻿using module .\measure.psm1
-
+﻿
 $count = 100000
 $value = 1 .. $Count
 
@@ -7,9 +6,9 @@ enum ObjectOutputKind{
     WriteOutputCmdletForeach
     WriteOutputCmdletPipe
     WriteOutputCmdletNoEnum
-    WriteObjectFunction
-    WriteObjectFunctionNoEnum
-    WriteObjectFunctionForeach
+    WriteObjectMethod
+    WriteObjectMethodNoEnum
+    WriteObjectMethodForeach
     NonCaptured
 }
 
@@ -32,9 +31,9 @@ function Write-ObjectOutput {
         ([ObjectOutputKind]::WriteOutputCmdletForeach) { foreach ($v in $i) { Write-Output $v } }
         ([ObjectOutputKind]::WriteOutputCmdletPipe) { $i | Write-Output }
         ([ObjectOutputKind]::WriteOutputCmdletNoEnum) { Write-Output $i -NoEnumerate }
-        ([ObjectOutputKind]::WriteObjectFunctionForeach) { foreach ($v in $i) { $pscmdlet.WriteObject($v) }}
-        ([ObjectOutputKind]::WriteObjectFunction) { $pscmdlet.WriteObject($i, $true) }
-        ([ObjectOutputKind]::WriteObjectFunctionNoEnum) {$pscmdlet.WriteObject($i, $false)}
+        ([ObjectOutputKind]::WriteObjectMethodForeach) { foreach ($v in $i) { $pscmdlet.WriteObject($v) }}
+        ([ObjectOutputKind]::WriteObjectMethod) { $pscmdlet.WriteObject($i, $true) }
+        ([ObjectOutputKind]::WriteObjectMethodNoEnum) {$pscmdlet.WriteObject($i, $false)}
         ([ObjectOutputKind]::NonCaptured) { $i }
     }
 }

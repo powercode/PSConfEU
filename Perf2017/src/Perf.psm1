@@ -1,9 +1,8 @@
 using module .\Helpers\ObjectCreation.psm1
 using module .\Helpers\member_access.psm1
-using module .\Helpers\measure.psm1
-using module .\Helpers\iter.psm1
+using module .\Helpers\iteration.psm1
 using module .\Helpers\filesystem.psm1
-using module .\Helpers\internals.psm1
+using module .\Helpers\pipeline.psm1
 
 function Measure-ObjectCreationPerformance {
     [CmdletBinding()]
