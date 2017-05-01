@@ -12,6 +12,7 @@ Properties {
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
     $TestRootDir = "$PSScriptRoot\..\test"
     $NonSrcDirs = 'Helpers', 'cs'
+    $RequiredAssemblies = @('PowerCode.dll')
 
     # The name of your module should match the basename of the PSD1 file.
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -26,7 +27,8 @@ Properties {
     # The local installation directory for the install task. Defaults to your home Modules location.
     # The test for $profile is for the Plaster AppVeyor build machine since it doesn't define $profile.
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-    $InstallPath = Join-Path (Split-Path $(if ($profile) {$profile} else {$Home}) -Parent) `
+    $InstallPath = Join-Path (Split-Path $(if ($profile) {$profile}
+            else {$Home}) -Parent) `
                              "Modules\$ModuleName\$((Test-ModuleManifest -Path $SrcRootDir\$ModuleName.psd1).Version.ToString())"
 
     # Default Locale used for help generation, defaults to en-US.

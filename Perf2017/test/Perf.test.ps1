@@ -3,7 +3,7 @@ using module ..\release\Perf\Perf.psd1
 Describe 'Performance tests' {
     It 'Measures object member access' {
         $res = Measure-MemberAccess -Count 10000
-        $res.Count | Should be 4
+        $res.Count | Should be 5
     }
 
     It 'Measures object output' {

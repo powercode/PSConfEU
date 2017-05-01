@@ -2,6 +2,6 @@ using module .\release\Perf
 [CmdletBinding()]
 param()
 
-$res = Measure-FileSystemIteration
+Measure-FileSystemIteration -ov res
 
 $res | Out-Chart -Property Kind, TimeMs -ChartType Column -Title 'File system enumeration'

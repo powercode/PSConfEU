@@ -3,6 +3,7 @@ using module .\Helpers\member_access.psm1
 using module .\Helpers\iteration.psm1
 using module .\Helpers\filesystem.psm1
 using module .\Helpers\pipeline.psm1
+using module .\Helpers\progress.psm1
 
 function Measure-ObjectCreationPerformance {
     [CmdletBinding()]
@@ -17,13 +18,17 @@ function Measure-ObjectCreationPerformance {
     [GC]::WaitForPendingFinalizers()
 
     $i = 0
-
-    [Enum]::GetValues([ObjType]) | ForEach-Object {
-        $i++
-        Write-Progress -id 1 -activity CreateObject -status "creating $count $_" -percentComplete ($i * 100 / 12)
-        $tester.TestCreation($_)
+    $kinds = [Enum]::GetNames([ObjType])
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "ObjectCreation", "Creating objects", $kinds.Count)
+    try {
+        $kinds | ForEach-Object {
+            $pr.WriteNext($_)
+            $tester.TestCreation($_)
+        }
     }
-    Write-Progress -id 1 -activity CreateObject -status "creating $count $_" -completed
+    finally {
+        $pr.WriteCompleted()
+    }
 }
 
 function Measure-Sum {
@@ -34,19 +39,23 @@ function Measure-Sum {
         [switch] $Chart,
         [switch] $Pipeline
     )
-    [Enum]::GetValues([LoopKind]).Foreach{
-
-
-        $sw = [Diagnostics.Stopwatch]::StartNew()
-        if ($Pipeline) {
-            $sum = (1..$Count) | Get-Sum -Kind $_
+    $kinds = [Enum]::GetValues([LoopKind])
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "ObjectCreation", "Creating objects", $kinds.Count)
+    try {
+        $kinds | ForEach-Object {
+            $pr.WriteNext($_)
+            $sw = [Diagnostics.Stopwatch]::StartNew()
+            if ($Pipeline) {
+                $sum = (1..$Count) | Get-Sum -Kind $_
+            }
+            else {
+                $sum = Get-Sum -Number (1..$Count) -Kind $_
+            }
+            $e = $sw.Elapsed
+            [LoopResult] @{  Kind = $_ ; Sum = $sum; Count = $count; Time = $e; TimeMs = $e.TotalMilliseconds; Ticks = $e.Ticks}
         }
-        else {
-            $sum = Get-Sum -Number (1..$Count) -Kind $_
-        }
-        $e = $sw.Elapsed
-        [LoopResult] @{  Kind = $_ ; Sum = $sum; Count = $count; Time = $e; TimeMs = $e.TotalMilliseconds; Ticks = $e.Ticks}
     }
+    finally {$pr.WriteCompleted()}
 }
 
 
@@ -55,10 +64,15 @@ function Measure-FileSystemIteration {
     param(
         [string] $Path = "$env:SystemRoot\System32"
     )
-    [Enum]::GetNames([FileAccessKind]) | ForEach-Object {
-        $res = [FileSystemIterator]::Iterate($Path, $_)
-        $res
+    $kinds = [Enum]::GetValues([LoopKind])
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "FileSystem enum", "traversing", $kinds.Count)
+    try {
+        $kinds | ForEach-Object {
+            $res = [FileSystemIterator]::Iterate($Path, $_)
+            $res
+        }
     }
+    finally {$pr.WriteCompleted()}
 
 }
 
@@ -69,17 +83,24 @@ function Measure-ObjectOutput {
         [Parameter(Mandatory)]
         [int]$Count)
 
-    [Enum]::GetNames([ObjectOutputKind]) | ForEach-Object {
-        $sw = [System.Diagnostics.Stopwatch]::StartNew()
-        Write-ObjectOutput -Kind $_ -Count $Count | out-null
-        $e = $sw.Elapsed
-        return [ObjectOutputResult] @{
-            Kind = $_
-            Count = $count
-            Time = $e
-            TimeMs = $e.TotalMilliseconds
-            Ticks = $e.Ticks
+    $kinds = [Enum]::GetNames([ObjectOutputKind])
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Pipeline output", "measuring", $kinds.Count)
+    try {
+        $kinds | ForEach-Object {
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            Write-ObjectOutput -Kind $_ -Count $Count | out-null
+            $e = $sw.Elapsed
+            return [ObjectOutputResult] @{
+                Kind = $_
+                Count = $count
+                Time = $e
+                TimeMs = $e.TotalMilliseconds
+                Ticks = $e.Ticks
+            }
         }
+    }
+    finally {
+        $pr.WriteCompleted()
     }
 }
 
@@ -87,12 +108,19 @@ function Measure-MemberAccess {
     [CmdletBinding()]
     [OutputType([MemberAccessResult])]
     param([int] $Count)
-
-    [Enum]::GetNames([TestMethodKind]) | ForEach-Object {
-        $sw = [System.Diagnostics.Stopwatch]::StartNew()
-        $to = [TestObject]::new()
-        $to.AddTest($_, $Count)
-        $e = $sw.Elapsed
-        return [MemberAccessResult]::new($_, $e, $count)
+    $kinds = [Enum]::GetNames([TestMethodKind])
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Member Access", "Calling Members", $kinds.Count)
+    try {
+        $kinds | ForEach-Object {
+            $pr.WriteNext($_)
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            $to = [TestObject]::new()
+            $to.AddTest($_, $Count)
+            $e = $sw.Elapsed
+            return [MemberAccessResult]::new($_, $e, $count)
+        }
+    }
+    finally {
+        $pr.WriteCompleted()
     }
 }

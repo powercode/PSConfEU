@@ -174,7 +174,7 @@ Task Analyze -depends StageFiles `
     }
 }
 
-Task BuildDotNet -requiredVariables CSSrcDir, ModuleOutDir, ModuleName {
+Task BuildDotNet -requiredVariables CSSrcDir, ModuleOutDir, ModuleName, RequiredAssemblies {
     $csc = Search-Everything -extension exe -PathInclude MSBuild csc.exe -Global | Get-Item | Sort-Object {$_.VersionInfo.FileVersion} -Descending | Select-object -First 1
     if ($csc.VersionInfo.FileVersion -lt '2.0.0.0') {
         throw "csc.exe not found"
@@ -190,7 +190,8 @@ Task BuildDotNet -requiredVariables CSSrcDir, ModuleOutDir, ModuleName {
         }
     }
     $files = Get-ChildItem -File $ModuleOutDir | Foreach-Object Name
-    Update-ModuleManifest -Path $ModuleOutDir/$ModuleName.psd1 -RequiredAssemblies (Split-Path -leaf $dlls) -FileList $files
+
+    Update-ModuleManifest -Path $ModuleOutDir/$ModuleName.psd1 -RequiredAssemblies ($RequiredAssemblies + (Split-Path -leaf $dlls)) -FileList $files
 }
 
 Task Sign -depends StageFiles -requiredVariables CertPath, SettingsPath, ScriptSigningEnabled {

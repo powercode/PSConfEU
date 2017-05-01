@@ -109,6 +109,7 @@
         <TypeName>ObjectOutputResult</TypeName>
         <TypeName>MemberAccessResult</TypeName>
         <TypeName>LoopResult</TypeName>
+        <TypeName>FileIterResult</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>
