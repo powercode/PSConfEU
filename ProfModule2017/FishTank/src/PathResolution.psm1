@@ -35,6 +35,20 @@ class PathResult {
 }
 
 class PathResolution {
+    <# Error if it resolves to more than one path #>
+    static [PathResult] ResolveUniquePath([string] $path, [PathIntrinsics] $pathIntrinsics) {
+        if (!(Test-Path -Path $path)) {
+            return [PathResolution]::CreatePathNotFoundErrorRecord($path)
+        }
+        else {
+            $provider = $null
+            $resolved = $pathIntrinsics.GetResolvedProviderPathFromPSPath($path, [ref] $provider)
+            if ($resolved.Count -eq 1) {
+                return $resolved[0]
+            }
+        }
+        return [PathResolution]::CreatePathResolvesToMultipleFilesErrorRecord($path)
+    }
 
     static [PathResult] ResolveLiteralPath([string] $path, [PathIntrinsics] $pathIntrinsics) {
         if (!(Test-Path -LiteralPath $path)) {
@@ -51,21 +65,6 @@ class PathResolution {
             $retVal[$i] = [PathResolution]::ResolveLiteralPath($paths[$i], $pathIntrinsics)
         }
         return $retVal
-    }
-
-    <# Error if it resolves to more than one path #>
-    static [PathResult] ResolveUniquePath([string] $path, [PathIntrinsics] $pathIntrinsics) {
-        if (!(Test-Path -Path $path)) {
-            return [PathResolution]::CreatePathNotFoundErrorRecord($path)
-        }
-        else {
-            $provider = $null
-            $resolved = $pathIntrinsics.GetResolvedProviderPathFromPSPath($path, [ref] $provider)
-            if ($resolved.Count -eq 1) {
-                return $resolved[0]
-            }
-        }
-        return [PathResolution]::CreatePathResolvesToMultipleFilesErrorRecord($path)
     }
 
     static [List[PathResult]] ResolvePaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
@@ -85,12 +84,8 @@ class PathResolution {
         return $retVal
     }
 
-    static [PathResult[]] ResolveNonExistingPaths([string[]] $paths, [PathIntrinsics] $pathIntrinsics) {
-        $retVal = [PathResult[]]::new($paths.Length)
-        for ($i = 0; $i -lt $retVal.Length; $i++) {
-            $retVal[$i] = [PathResult]::new($pathIntrinsics.GetUnresolvedProviderPathFromPSPath($paths[$i]))
-        }
-        return $retVal
+    static [PathResult[]] ResolveNonExistingPath([string] $path, [PathIntrinsics] $pathIntrinsics) {
+        return [PathResult]::new($pathIntrinsics.GetUnresolvedProviderPathFromPSPath($path))
     }
 
     static [ErrorRecord] CreatePathNotFoundErrorRecord([string] $path) {

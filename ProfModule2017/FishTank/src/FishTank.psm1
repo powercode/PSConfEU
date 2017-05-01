@@ -118,7 +118,7 @@ function Export-FishTank {
             $pathResult = [PathResolution]::ResolveLiteralPath($LiteralPath, $PSCmdlet.SessionState.Path)
         }
         if ($pathResult.IsError() -and $pathResult.GetError().CategoryInfo.Category -eq [ErrorCategory]::ObjectNotFound) {
-            $pathResult = [PathResolution]::ResolveNonExistingPaths($Path, $PSCmdlet.SessionState.Path)
+            $pathResult = [PathResolution]::ResolveNonExistingPath($Path, $PSCmdlet.SessionState.Path)
         }
 
         if ($PSCmdlet.ShouldProcess("Export-FishTank", $pathResult)) {
