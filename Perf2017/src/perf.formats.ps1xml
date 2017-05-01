@@ -107,6 +107,8 @@
       <Name>Default</Name>
       <ViewSelectedBy>
         <TypeName>ObjectOutputResult</TypeName>
+        <TypeName>MemberAccessResult</TypeName>
+        <TypeName>LoopResult</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>

@@ -46,7 +46,7 @@ function Measure-Sum {
             $sum = Get-Sum -Number (1..$Count) -Kind $_
         }
         $e = $sw.Elapsed
-        [LoopResult] @{  Kind = $_ ; Sum = $sum; Time = $e; TimeMs = $e.TotalMilliseconds; Ticks = $e.Ticks}
+        [LoopResult] @{  Kind = $_ ; Sum = $sum; Count = $count; Time = $e; TimeMs = $e.TotalMilliseconds; Ticks = $e.Ticks}
     }
 }
 
