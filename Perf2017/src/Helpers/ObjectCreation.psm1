@@ -32,38 +32,24 @@ class MemoryPerfCounters : IDisposable {
 enum ObjType {
     DotNet
     PSClass
+    PSClassCtor
     Hashtable
     PSObject
 }
 
-class ObjectCreationResult {
-    [ObjType] $Type
-    [long] $Mem
-    [TimeSpan] $time
-    [int] $Count
-    [int] $BytesPerObject
-    [long] $TimeMs
-    [long] $Ticks
-
-    ObjectCreationResult([ObjType] $Type, [long] $Mem, [TimeSpan] $time, [int] $Count, [int] $BytesPerObject) {
-        $this.Type = $type
-        $this.Mem = $mem
-        $this.Time = $time
-        $this.Count = $count
-        $this.BytesPerObject = [int] ($mem / $Count)
-        $this.TimeMs = $time.TotalMilliseconds
-        $this.Ticks = $time.Ticks
-    }
-}
-
-
 class Person {
     [string] $Name
     [int] $Age
+
     Person([string] $name, [int] $age) {
         $this.Name = $name
         $this.Age = $age
     }
+}
+
+class PersonNoCtor {
+    [string] $Name
+    [int] $Age
 }
 
 class Tester {
@@ -73,22 +59,6 @@ class Tester {
     Tester([int] $count, [MemoryPerfCounters] $counter) {
         $this.Count = $count
         $this.Counter = $counter
-    }
-
-    static  [psobject] CreatePSObject([string] $name, [int] $age) {
-        return [PSCustomObject] @{
-            Name = $Name
-            Age = $Age
-            PSTypeName = 'Person'
-        }
-    }
-
-    static [hashtable] CreateHashTable([string] $name, [int] $age) {
-        return @{
-            Name = $name
-            Age = $age
-            Type = 'Person'
-        }
     }
 
     [object] CreateObjects([ObjType] $type) {
@@ -102,6 +72,15 @@ class Tester {
                 }
             }
             'PSClass' {
+                $l = [List[PersonNoCtor]]::new($count)
+                foreach ($i in 1 .. $count) {
+                    $l.Add([PersonNoCtor]@{
+                            Name = "Staffan"
+                            Age = 45
+                        })
+                }
+            }
+            'PSClassCtor' {
                 $l = [List[Person]]::new($count)
                 foreach ($i in 1 .. $count) {
                     $l.Add([Person]::new("Staffan", 45))
@@ -110,13 +89,23 @@ class Tester {
             'PSObject' {
                 $l = [List[PSObject]]::new($count)
                 foreach ($i in 1 .. $count) {
-                    $l.Add([Tester]::CreatePSObject("Staffan", 45))
+                    $o = [PSCustomObject] @{
+                        Name = "Staffan"
+                        Age = 45
+                        PSTypeName = 'Person'
+                    }
+                    $l.Add($o)
                 }
             }
             'Hashtable' {
                 $l = [List[HashTable]]::new($count)
                 foreach ($i in 1 .. $count) {
-                    $l.Add([Tester]::CreateHashTable("Staffan", 45))
+                    $o = @{
+                        Name = "Staffan"
+                        Age = 64
+                        Type = 'Person'
+                    }
+                    $l.Add($o)
                 }
             }
         }
@@ -141,5 +130,25 @@ class Tester {
         [GC]::WaitForPendingFinalizers()
         return [ObjectCreationResult]::new($type, $memDiff, $elapsed, $count, [int] ($memdiff / $Count))
 
+    }
+}
+
+class ObjectCreationResult {
+    [ObjType] $Type
+    [long] $Mem
+    [TimeSpan] $time
+    [int] $Count
+    [int] $BytesPerObject
+    [long] $TimeMs
+    [long] $Ticks
+
+    ObjectCreationResult([ObjType] $Type, [long] $Mem, [TimeSpan] $time, [int] $Count, [int] $BytesPerObject) {
+        $this.Type = $type
+        $this.Mem = $mem
+        $this.Time = $time
+        $this.Count = $count
+        $this.BytesPerObject = [int] ($mem / $Count)
+        $this.TimeMs = $time.TotalMilliseconds
+        $this.Ticks = $time.Ticks
     }
 }

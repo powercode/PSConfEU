@@ -52,7 +52,7 @@
         <TableHeaders>
           <TableColumnHeader>
             <Label>Type</Label>
-            <Width>10</Width>
+            <Width>15</Width>
             <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>

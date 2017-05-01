@@ -15,4 +15,4 @@ $result = for ($i = 0; $i -lt $res.count; $i++) {
     }
 }
 
-$result | Out-Chart -Property Kind, PipeTime, ArrayTime -ChartType Column -ChartSettings @{LabelFormatString = 'N0'}
+$result | Out-Chart -Property Kind, PipeTime, ArrayTime -ChartType Column -ChartSettings @{LabelFormatString = 'N0'} -Title 'Looping construct' -path img/iter.png
