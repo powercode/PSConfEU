@@ -3,65 +3,34 @@
 $count = 100000
 $value = 1 .. $Count
 
+enum ObjectOutputKind{
+    WriteOutputCmdlet
+    WriteOutputCmdletNoEnum
+    WriteObjectFunction
+    WriteObjectFunctionNoEnum
+    NonCaptured
+}
 
+class ObjectOutputResult {
+    [ObjectOutputKind] $Kind
+    [timespan] $Time
+    [int] $count
+    [int] $TimeMs
+}
 
-function Write-TestData {
-    param(
-        [int[]]$value
-    )
-    end {
-        foreach ($v in $value) {
-            Write-output $v
-        }
+function Write-ObjectOutput {
+    [CmdletBinding()]
+    [OutputType([ObjectOutputResult])]
+    param([ObjectOutputKind] $kind, [int] $count)
+
+    [int[]] $i = 1..$Count
+
+    $res = switch ($kind) {
+        ([ObjectOutputKind]::WriteOutputCmdlet) { $i | Write-Output }
+        ([ObjectOutputKind]::WriteOutputCmdletNoEnum) { Write-Output $i }
+        ([ObjectOutputKind]::WriteObjectFunction) { $pscmdlet.WriteObject($i) }
+        ([ObjectOutputKind]::WriteObjectFunctionNoEnum) {$pscmdlet.WriteObject($i, $false)}
+        ([ObjectOutputKind]::NonCaptured) { $i }
     }
 }
 
-Measure-CommandEx {Write-TestData $value} -Count $count -Label 'Foreach Write-Output'
-
-function Write-TestData {
-    param(
-        [int[]]$value
-    )
-    end {
-        foreach ($v in $value) {
-            $v
-        }
-    }
-}
-
-Measure-CommandEx {Write-TestData $value} -Count $count -Label 'Foreach $v'
-
-function Write-TestData2 {
-    param(
-        [int[]]$value
-    )
-    end {
-        Write-output $value
-    }
-}
-
-Measure-CommandEx {Write-TestData2 $value} -Count $count -Label 'Write-Output enumerate'
-
-function Write-TestData3 {
-    [cmdletBinding()]
-    param(
-        [int[]]$value
-    )
-    end {
-        $PSCmdlet.WriteObject($value, $true)
-    }
-}
-
-Measure-CommandEx {Write-TestData3 } -Count $count -Label '$pscmdlet enumerate'
-
-function Write-TestData4 {
-    [cmdletBinding()]
-    param(
-        [int[]]$value
-    )
-    end {
-        $PSCmdlet.WriteObject($value, $false)
-    }
-}
-
-Measure-CommandEx {Write-TestData4 } -Count $count -Label '$pscmdlet noenumerate'

@@ -103,5 +103,47 @@
         </TableRowEntries>
       </TableControl>
     </View>
+     <View>
+      <Name>Default</Name>
+      <ViewSelectedBy>
+        <TypeName>ObjectOutputResult</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Kind</Label>
+            <Width>10</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Time</Label>
+            <Width>13</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Count</Label>
+            <Width>15</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Kind</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <FormatString>hh\:mm\:ss\.fff</FormatString>
+                <PropertyName>Time</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <FormatString>N0</FormatString>
+                <PropertyName>Count</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
   </ViewDefinitions>
 </Configuration>

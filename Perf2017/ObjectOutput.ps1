@@ -1,6 +1,6 @@
 using module .\release\Perf\Perf.psd1
 [CmdletBinding()]
-param()
+param([int] $Count = 100000)
 
-Test-ObjectCreationPerformance -ov res
+Measure-ObjectOutput -ov res -Count $count
 $res | out-chart -Property type, mem, ticks -ChartType Column -ChartSettings @{LabelFormatString = 'N0'}

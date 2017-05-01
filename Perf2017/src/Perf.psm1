@@ -2,7 +2,7 @@ using module .\Helpers\ObjectCreation.psm1
 using module .\Helpers\member_access.psm1
 using module .\Helpers\measure.psm1
 using module .\Helpers\iter.psm1
-using module .\Helpers\io.psm1
+using module .\Helpers\filesystem.psm1
 using module .\Helpers\internals.psm1
 
 function Measure-ObjectCreationPerformance {
@@ -28,6 +28,7 @@ function Measure-ObjectCreationPerformance {
 }
 
 function Measure-ArraySumIter {
+    [CmdletBinding()]
     [OutputType([LoopResult])]
     param(
         [int] $Count = 1000000,
@@ -44,6 +45,7 @@ function Measure-ArraySumIter {
 }
 
 function Measure-ArrayPipeIter {
+    [CmdletBinding()]
     [OutputType([LoopResult])]
     param(
         [int] $Count = 1000000,
@@ -70,4 +72,23 @@ function Measure-FileSystemIteration {
         $res
     }
 
+}
+
+function Measure-ObjectOutput {
+    [OutputType([ObjectOutputResult])]
+    param(
+        [Parameter(Mandatory)]
+        [int]$Count)
+
+    [Enum]::GetNames([ObjectOutputKind]) | ForEach-Object {
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        Write-ObjectOutput -Kind $_ -Count $Count | out-null
+        $e = $sw.Elapsed
+        return [ObjectOutputResult] @{
+            Kind = $_
+            Count = $count
+            Time = $e
+            TimeMs = $e.TotalMilliseconds
+        }
+    }
 }

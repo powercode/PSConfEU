@@ -1,15 +1,20 @@
 using module ..\release\Perf\Perf.psd1
 
 Describe 'Performance tests' {
-    It 'Creates objects' -skip {
+    It 'Measures object output' {
+        $res = Measure-ObjectOutput -Count 1000000
+        $res.Count | Should be 5
+    }
+
+    It 'Creates objects' {
         $res = Measure-ObjectCreationPerformance -count 1000
         $res.Count | Should be 4
         foreach ($r in $res) {
             $r -is [ObjectCreationResult] | Should Be true
         }
     }
-    It 'Iterates arrays' -skip {
-        $res = Measure-ArraySumIter
+    It 'Iterates arrays' {
+        $res = Measure-ArraySumIter -Count 1000000
         $res.Count | Should be 4
         foreach ($r in $res) {
             $r -is [LoopResult] | Should Be true
