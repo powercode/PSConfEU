@@ -1,4 +1,4 @@
-using module .\Helpers\object_creation.psm1
+using module .\Helpers\ObjectCreation.psm1
 using module .\Helpers\member_access.psm1
 using module .\Helpers\measure.psm1
 using module .\Helpers\iter.psm1
