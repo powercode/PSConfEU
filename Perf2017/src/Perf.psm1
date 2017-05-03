@@ -89,6 +89,7 @@ function Measure-ObjectOutput {
     $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Pipeline output", "measuring", $kinds.Count)
     try {
         $kinds | ForEach-Object {
+            $pr.WriteNext($_)
             $sw = [System.Diagnostics.Stopwatch]::StartNew()
             Write-ObjectOutput -Kind $_ -Count $Count | out-null
             $e = $sw.Elapsed
