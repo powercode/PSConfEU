@@ -1,5 +1,5 @@
 using module .\Helpers\ObjectCreation.psm1
-using module .\Helpers\member_access.psm1
+using module .\Helpers\MemberAccess.psm1
 using module .\Helpers\iteration.psm1
 using module .\Helpers\filesystem.psm1
 using module .\Helpers\pipeline.psm1
