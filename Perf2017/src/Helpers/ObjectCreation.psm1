@@ -115,14 +115,13 @@ class Tester {
     [psobject] TestCreation([ObjType] $type) {
         $local:count = $this.Count
         [GC]::Collect(2, [GCCollectionMode]::Forced, $true, $true)
+        [GC]::WaitForPendingFinalizers()
         Start-Sleep -seconds 1
-        [Runtime.GCSettings]::LargeObjectHeapCompactionMode = 'CompactOnce'
-        [GC]::Collect(3)
         $memBaseLine = $this.Counter.GetBytesInAllHeaps()
         $sw = [Stopwatch]::StartNew()
         $o = $this.CreateObjects($type)
         $elapsed = $sw.Elapsed
-        Start-Sleep -seconds 1
+        Start-Sleep -seconds 2
         $mem = $this.Counter.GetBytesInAllHeaps()
         $o = $null;
         $memDiff = $mem - $memBaseLine

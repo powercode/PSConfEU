@@ -23,13 +23,24 @@ function Get-Sum {
     }
     process {
         switch ($Kind) {
-            ([LoopKind]::ForeachObject) { $Number | ForEach-Object { $sum += $_ } ; break }
-            ([LoopKind]::ForeachLang) { foreach ($n in $Number) { $sum += $n }   ; break }
-            ([LoopKind]::MagicForeach) {  $Number.Foreach{$sum += $_ }           ; break }
+            ([LoopKind]::ForeachObject) {
+                <# test #> $Number | ForEach-Object { $sum += $_ }
+                break
+            }
+            ([LoopKind]::ForeachLang) {
+                <# test #> foreach ($n in $Number) { $sum += $n }
+                break
+            }
+            ([LoopKind]::MagicForeach) {
+                <# test #> $Number.Foreach{$sum += $_ }
+                break
+            }
             ([LoopKind]::For) {
+                <# test #>
                 for ($i = 0; $i -lt $Number.Length; $i++) {
                     $sum += $Number[$i]
-                }                 ; break
+                }
+                break
             }
         }
     }

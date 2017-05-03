@@ -3,13 +3,14 @@ $count = 100000
 $value = 1 .. $Count
 
 enum ObjectOutputKind{
-    WriteOutputCmdletForeach
-    WriteOutputCmdletPipe
-    WriteOutputCmdletNoEnum
     WriteObjectMethod
     WriteObjectMethodNoEnum
     WriteObjectMethodForeach
     NonCaptured
+    NonCapturedForeach
+    WriteOutputCmdletForeach
+    WriteOutputCmdletPipe
+    WriteOutputCmdletNoEnum
 }
 
 class ObjectOutputResult {
@@ -34,7 +35,9 @@ function Write-ObjectOutput {
         ([ObjectOutputKind]::WriteObjectMethodForeach) { foreach ($v in $i) { $pscmdlet.WriteObject($v) }}
         ([ObjectOutputKind]::WriteObjectMethod) { $pscmdlet.WriteObject($i, $true) }
         ([ObjectOutputKind]::WriteObjectMethodNoEnum) {$pscmdlet.WriteObject($i, $false)}
+        ([ObjectOutputKind]::NonCapturedForeach) { foreach($ii in $i){$ii} }
         ([ObjectOutputKind]::NonCaptured) { $i }
+
     }
 }
 
