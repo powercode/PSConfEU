@@ -1,9 +1,10 @@
-using module .\Helpers\ObjectCreation.psm1
+using module .\Helpers\ObjectAllocation.psm1
+using module .\Helpers\Iteration.psm1
+using module .\Helpers\Filesystem.psm1
+using module .\Helpers\PipelineOutput.psm1
 using module .\Helpers\MemberAccess.psm1
-using module .\Helpers\iteration.psm1
-using module .\Helpers\filesystem.psm1
-using module .\Helpers\pipeline.psm1
-using module .\Helpers\progress.psm1
+using module .\Helpers\Progress.psm1
+using module .\Helpers\WebDownload.psm1
 
 Set-StrictMode -Version latest
 
@@ -42,7 +43,7 @@ function Measure-Sum {
         [switch] $Pipeline
     )
     $kinds = [Enum]::GetValues([LoopKind])
-    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "ObjectCreation", "Creating objects", $kinds.Count)
+    $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Iterations", "looping over collection of integers", $kinds.Count)
     try {
         $kinds | ForEach-Object {
             $pr.WriteNext($_)
@@ -59,7 +60,6 @@ function Measure-Sum {
     }
     finally {$pr.WriteCompleted()}
 }
-
 
 function Measure-FileSystemIteration {
     [CmdletBinding()]
@@ -127,28 +127,6 @@ function Measure-MemberAccess {
         $pr.WriteCompleted()
     }
 }
-
-
-enum Downloadkind {
-    WebClient
-    IWR
-    IWRProgress
-}
-
-class WebDownloadResult {
-    [Downloadkind] $Kind
-    [TimeSpan] $time
-    [long] $TimeMs
-    [long] $Ticks
-
-    WebDownloadResult([Downloadkind] $Kind, [TimeSpan] $time) {
-        $this.Kind = $Kind
-        $this.Time = $time
-        $this.TimeMs = $time.TotalMilliseconds
-        $this.Ticks = $time.Ticks
-    }
-}
-
 
 function Measure-WebDownload {
     [CmdletBinding()]
