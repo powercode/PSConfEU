@@ -21,7 +21,6 @@ function AddFourthNight {
     return $d.AddDays(14)
 }
 
-
 class TestObject {
 
     [void] AddTest([TestMethodKind] $kind, $count) {
