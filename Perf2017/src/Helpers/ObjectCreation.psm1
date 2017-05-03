@@ -76,7 +76,7 @@ class Tester {
                 foreach ($i in 1 .. $count) {
                     $l.Add([PersonNoCtor]@{
                             Name = "Staffan"
-                            Age = 45
+                            Age = 26
                         })
                 }
             }
@@ -91,7 +91,7 @@ class Tester {
                 foreach ($i in 1 .. $count) {
                     $o = [PSCustomObject] @{
                         Name = "Staffan"
-                        Age = 45
+                        Age = 34
                         PSTypeName = 'Person'
                     }
                     $l.Add($o)
@@ -102,7 +102,7 @@ class Tester {
                 foreach ($i in 1 .. $count) {
                     $o = @{
                         Name = "Staffan"
-                        Age = 64
+                        Age = 53
                         Type = 'Person'
                     }
                     $l.Add($o)
