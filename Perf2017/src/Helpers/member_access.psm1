@@ -43,10 +43,14 @@ class TestObject {
 
 }
 
+$codeMethod = [Dotnet.CodeMethods].GetMethod("AddFortnight",
+                ([BindingFlags]::Static -bor [BindingFlags]::Public -bor [BindingFlags]::IgnoreCase))
 $td = [TypeData]::new([datetime])
-$td.Members.Add("AddFortnightScript", [ScriptMethodData]::new("AddFortnightScript", {param([int] $i) return [long] $this.Number + $i}))
-$codeMethod = [Dotnet.CodeMethods].GetMethod("AddFortnight", ([BindingFlags]::Static -bor [BindingFlags]::Public -bor [BindingFlags]::IgnoreCase))
-$td.Members.Add("AddFortnightCode", [CodeMethodData]::new("AddFortnightCode", $codeMethod))
+$td.Members.Add("AddFortnightScript",
+    [ScriptMethodData]::new("AddFortnightScript",
+         {param([int] $i) return [long] $this.Number + $i}))
+$td.Members.Add("AddFortnightCode",
+    [CodeMethodData]::new("AddFortnightCode", $codeMethod))
 
 Update-TypeData -TypeData $td -Force
 
