@@ -12,3 +12,6 @@ $res | Group-Object Kind | ForEach-Object {
     }
     [PSCustomObject] $r
 } | Out-Chart -Property Kind, N1000, N2000,N3000, N4000 -Title "String Format" -ChartType Column
+
+
+Measure-StringFormat -Count 20000 -kind StringBuilder, StringBuilderCap

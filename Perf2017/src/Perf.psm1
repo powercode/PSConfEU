@@ -141,7 +141,7 @@ function Measure-StringFormat {
 
     process {
 
-        $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "String format", "measuring", $kinds.Count)
+        $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "String format", "measuring", $kind.Count)
         try {
             $kind | ForEach-Object {
                 $pr.WriteNext($_)
