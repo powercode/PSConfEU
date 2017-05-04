@@ -111,6 +111,7 @@
         <TypeName>LoopResult</TypeName>
         <TypeName>FileIterResult</TypeName>
         <TypeName>WebDownloadResult</TypeName>
+        <TypeName>StringFormatResult</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>

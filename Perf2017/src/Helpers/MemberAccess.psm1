@@ -10,11 +10,6 @@ enum TestMethodKind {
     Function
 }
 
-enum TestPropertyKind {
-    DotNetProperty
-    Function
-}
-
 function AddFourthNight {
     [OutputType([datetime])]
     param([datetime]$d)

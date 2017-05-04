@@ -4,6 +4,7 @@ using module .\Helpers\Filesystem.psm1
 using module .\Helpers\PipelineOutput.psm1
 using module .\Helpers\MemberAccess.psm1
 using module .\Helpers\Progress.psm1
+using module .\Helpers\StringFormat.psm1
 using module .\Helpers\WebDownload.psm1
 
 Set-StrictMode -Version latest
@@ -127,6 +128,40 @@ function Measure-MemberAccess {
         $pr.WriteCompleted()
     }
 }
+
+
+
+function Measure-StringFormat {
+    [CmdletBinding()]
+    [OutputType([StringFormatKind])]
+    param(
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [int]$Count)
+
+    process {
+        $kinds = [Enum]::GetNames([StringFormatKind])
+        $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "String format", "measuring", $kinds.Count)
+        try {
+            $kinds | ForEach-Object {
+                $pr.WriteNext($_)
+                $sw = [Stopwatch]::StartNew()
+                [StringFormatTest]::FormatString($_, $Count)
+                $e = $sw.Elapsed
+                return [StringFormatResult] @{
+                    Kind = $_
+                    Count = $count
+                    Time = $e
+                    TimeMs = $e.TotalMilliseconds
+                    Ticks = $e.Ticks
+                }
+            }
+        }
+        finally {
+            $pr.WriteCompleted()
+        }
+    }
+}
+
 
 function Measure-WebDownload {
     [CmdletBinding()]

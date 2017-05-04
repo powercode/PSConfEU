@@ -55,6 +55,6 @@ function Measure-Collection {
         }
     }
 }
-5000, 10000, 15000, 20000, 25000, 30000 <#50000, 60000, 70000 #> | Measure-Collection -ov res
+5000, 10000, 15000, 20000, 25000  <# 30000, 50000, 60000, 70000 #> | Measure-Collection -ov res
 
 $res | Out-Chart -Property Count, ArrayMs, ListMs -ChartType Column -Title 'Collection Addition'
