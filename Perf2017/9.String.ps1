@@ -8,8 +8,7 @@ using module ./release/Perf
 $res | Group-Object Kind | ForEach-Object {
     $r = @{Kind = $_.Group[0].Kind }
     $_.Group.Foreach{
-        $r["N$($_.Count)"] = $_.TimeMs
+        $r["N$($_.Count)"] = $_.Ticks
     }
     [PSCustomObject] $r
-} -ov r2 
-$r2 | Out-Chart -Property Kind, N1000, N2000,N3000, N4000 -Title "String Format" -ChartType Column
+} | Out-Chart -Property Kind, N1000, N2000,N3000, N4000 -Title "String Format" -ChartType Column

@@ -22,7 +22,7 @@ function Measure-ObjectCreationPerformance {
     [GC]::WaitForPendingFinalizers()
 
     $i = 0
-    $kinds = [Enum]::GetNames([ObjType])
+    $kinds = [Enum]::GetValues([ObjType])
     $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "ObjectCreation", "Creating objects", $kinds.Count)
     try {
         $kinds | ForEach-Object {
@@ -86,7 +86,7 @@ function Measure-ObjectOutput {
         [Parameter(Mandatory)]
         [int]$Count)
 
-    $kinds = [Enum]::GetNames([ObjectOutputKind])
+    $kinds = [Enum]::GetValues([ObjectOutputKind])
     $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Pipeline output", "measuring", $kinds.Count)
     try {
         $kinds | ForEach-Object {
@@ -112,7 +112,7 @@ function Measure-MemberAccess {
     [CmdletBinding()]
     [OutputType([MemberAccessResult])]
     param([int] $Count)
-    $kinds = [Enum]::GetNames([TestMethodKind])
+    $kinds = [Enum]::GetValues([TestMethodKind])
     $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Member Access", "Calling Members", $kinds.Count)
     try {
         $kinds | ForEach-Object {
@@ -133,16 +133,17 @@ function Measure-MemberAccess {
 
 function Measure-StringFormat {
     [CmdletBinding()]
-    [OutputType([StringFormatKind])]
+    [OutputType([StringFormatResult])]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
-        [int]$Count)
+        [int]$Count,
+        [StringFormatKind[]] $Kind = [Enum]::GetValues([StringFormatKind]))
 
     process {
-        $kinds = [Enum]::GetNames([StringFormatKind])
+
         $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "String format", "measuring", $kinds.Count)
         try {
-            $kinds | ForEach-Object {
+            $kind | ForEach-Object {
                 $pr.WriteNext($_)
                 $sw = [Stopwatch]::StartNew()
                 [StringFormatTest]::FormatString($_, $Count)
@@ -168,7 +169,7 @@ function Measure-WebDownload {
     [OutputType([MemberAccessResult])]
     param([uri] $Uri)
 
-    $kinds = [Enum]::GetNames([Downloadkind])
+    $kinds = [Enum]::GetValues([Downloadkind])
     $pr = [Powercode.ProgressWriter]::Create($pscmdlet, "Web Download", "filling the pipes", $kinds.Count)
     $tmpFile = "$env:temp\webdownload.zip"
     try {

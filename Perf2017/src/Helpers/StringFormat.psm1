@@ -5,6 +5,7 @@ enum StringFormatKind {
     FormatOperator
     ExpandString
     StringBuilder
+    StringBuilderCap
 }
 
 class StringFormatResult {
@@ -38,6 +39,13 @@ class StringFormatTest {
                 }
             }
             ([StringFormatKind]::StringBuilder) {
+                $sb = [StringBuilder]::new()
+                foreach ($i in 1..$Count) {
+                    $sb.AppendFormat("{0}{1}{2}", $stringPart1, $i, $stringPart2)
+                }
+                $s = $sb.ToString()
+            }
+            ([StringFormatKind]::StringBuilderCap) {
                 $sb = [StringBuilder]::new(110 * $Count)
                 foreach ($i in 1..$Count) {
                     $sb.AppendFormat("{0}{1}{2}", $stringPart1, $i, $stringPart2)
