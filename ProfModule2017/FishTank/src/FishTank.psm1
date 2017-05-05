@@ -71,7 +71,7 @@ function Import-FishTank {
                         $ft = [FishTank]::new($_.Id, $model, $_.Location)
                         $fish = [Fish[]]$_.fish
                         $ft.Fish.AddRange($fish)
-                        $fishTanks.Add($ft)
+                        $script:fishTanks.Add($ft)
                         $ft
                     }
                 }
@@ -152,7 +152,7 @@ function Add-FishTank {
         [Fish[]] $Fish
     )
     $id = 0
-    foreach ($tank in $fishTanks) {
+    foreach ($tank in $script:fishTanks) {
         if ($tank.id -gt $id) {
             $id = $tank.Id
         }
@@ -163,7 +163,7 @@ function Add-FishTank {
     }
     $id++
     $tank = [FishTank]::new($id, $tankModel[0], $Location)
-    $fishTanks.Add($tank)
+    $script:fishTanks.Add($tank)
     $tank
 }
 
@@ -179,17 +179,17 @@ function Remove-FishTank {
     process {
         if ($PSCmdlet.ParameterSetName -eq 'All') {
             if ($Force -or $PSCmdlet.ShouldProcess("All", "Remove-FishTank")) {
-                $fishTanks.Clear()
+                $script:fishTanks.Clear()
             }
             return
         }
         foreach ($tankId in $id) {
             $found = $false
-            for ($i = 0; $i -lt $fishTanks.Count; $i++) {
-                $tank = $fishTanks[$i]
+            for ($i = 0; $i -lt $script:fishTanks.Count; $i++) {
+                $tank = $script:fishTanks[$i]
                 if ($tank.Id -eq $tankId) {
                     if ($Force -or $PSCmdlet.ShouldProcess("$($tank.Model), $($tank.Location)", "Remove-FishTank")) {
-                        $fishTanks.RemoveAt($i)
+                        $script:fishTanks.RemoveAt($i)
                     }
                     $found = $true
                     break
@@ -231,7 +231,7 @@ function Clear-FishTank {
         $i = 0
         try {
             foreach ($ft in $tanks) {
-                $PSCmdlet.WriteProgress( $pm.GetCurrentProgressRecord($i++, "Cleaning fishtank in $($ft.Location)"))
+                $PSCmdlet.WriteProgress( $pm.GetCurrentProgressRecord($i++, "Cleaning fish tank in $($ft.Location)"))
                 $ft.Clean($Hurry)
             }
         }
@@ -261,7 +261,7 @@ function Get-FishTank {
     $filter = [IncludeExcludeFilter]::new($Include, $Exclude)
     $out = [List[FishTank]]::new()
     $isId = $Id.Length -gt 0
-    foreach ($tank in $fishTanks) {
+    foreach ($tank in $script:fishTanks) {
         if ($isId) {
             if ($tank.Id -in $Id) {
                 $out.Add($tank)
