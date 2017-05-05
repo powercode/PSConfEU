@@ -12,6 +12,12 @@ The fishtank module help adminster all your fish tanks
 
 ## FishTank Cmdlets
 ### [Import-FishTank](Import-FishTank.md)
+### [Export-FishTank](Export-FishTank.md)
+### [Add-FishTank](Add-FishTank.md)
+### [Remove-FishTank](Remove-FishTank.md)
+### [Clear-FishTank](Clear-FishTank.md)
+### [Get-FishTank](Get-FishTank.md)
+### [Get-FishTankModel](Get-FishTankModel.md)
 
 
 

@@ -170,11 +170,19 @@ function Add-FishTank {
 function Remove-FishTank {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param(
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Id')]
         [ArgumentCompleter([FishTankCompleter])]
         [int[]] $Id,
+        [Parameter(ParameterSetName = 'All', Mandatory)]
+        [switch] $All,
         [switch] $Force)
     process {
+        if ($PSCmdlet.ParameterSetName -eq 'All') {
+            if ($Force -or $PSCmdlet.ShouldProcess("All", "Remove-FishTank")) {
+                $fishTanks.Clear()
+            }
+            return
+        }
         foreach ($tankId in $id) {
             $found = $false
             for ($i = 0; $i -lt $fishTanks.Count; $i++) {

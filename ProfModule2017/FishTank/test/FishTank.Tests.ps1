@@ -72,6 +72,7 @@ Describe 'Fishtank completion' {
     }
 
     It 'can complete id' {
+        Remove-FishTank -All -Force
         $t = Add-FishTank -ModelName 'Aquarium Evolution 40' -Location Livingroom
         $cmp = [FishTankCompleter]::new()
         $res = $cmp.CompleteArgument("", "Id", "", $null, $null)
