@@ -8,6 +8,7 @@ class ProgressManager {
     hidden [string] $Activity
     [string] $StatusDescription
     hidden [StopWatch] $Stopwatch
+    [long] $currentItemIndex
 
     ProgressManager([string] $activity, [string] $statusDescription, [long] $totalItemCount) {
         $this.init($activity, $StatusDescription, $totalItemCount, 1, - 1)
@@ -25,14 +26,19 @@ class ProgressManager {
         $this.Activity = $activity
         $this.Stopwatch = [Stopwatch]::StartNew()
     }
-
-    [ProgressRecord] GetCurrentProgressRecord([long] $currentItemIndex, [string] $currentOperation) {
+    [ProgressRecord] GetCurrentProgressRecord([string] $currentOperation) {
         $pr = [ProgressRecord]::new($this.ActivityId, $this.Activity, $this.StatusDescription)
         $pr.CurrentOperation = $currentOperation
         $pr.ParentActivityId = $this.ParentActivityId
-        $pr.PercentComplete = $this.GetPercentComplete($currentItemIndex)
-        $pr.SecondsRemaining = $this.GetSecondsRemaining($currentItemIndex)
+        $pr.PercentComplete = $this.GetPercentComplete($this.currentItemIndex)
+        $pr.SecondsRemaining = $this.GetSecondsRemaining($this.currentItemIndex)
+        $this.currentItemIndex++
         return $pr
+    }
+
+    [ProgressRecord] GetCurrentProgressRecord([long] $currentItemIndex, [string] $currentOperation) {
+        $this.currentItemIndex = $currentItemIndex
+        return $this.GetCurrentProgressRecord($currentOperation)
     }
 
     [ProgressRecord] GetCompletedRecord() {
